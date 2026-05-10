@@ -1,0 +1,481 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Church Member Management API",
+        "description": "API documentation for the Church Member Management System. Covers geographic data (provinces, districts, sectors, cellules, villages) and member management.",
+        "contact": {
+            "name": "Church Member API Support",
+            "email": "support@church-member.local"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api/v1",
+            "description": "API v1"
+        }
+    ],
+    "paths": {
+        "/{sector}/cellules": {
+            "get": {
+                "tags": [
+                    "Cellules"
+                ],
+                "summary": "List cellules by sector",
+                "description": "Returns all cellules belonging to the specified sector, ordered alphabetically.",
+                "operationId": "2740afc149080eac03b7a4ea652383db",
+                "parameters": [
+                    {
+                        "name": "sector",
+                        "in": "path",
+                        "description": "The ID of the sector",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of cellules for the given sector",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/CelluleResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Sector not found"
+                    }
+                }
+            }
+        },
+        "/{province}/districts": {
+            "get": {
+                "tags": [
+                    "Districts"
+                ],
+                "summary": "List districts by province",
+                "description": "Returns all districts belonging to the specified province, ordered alphabetically.",
+                "operationId": "97e7972f1a112879ab19d6f5fd361389",
+                "parameters": [
+                    {
+                        "name": "province",
+                        "in": "path",
+                        "description": "The ID of the province",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of districts for the given province",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/DistrictResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Province not found"
+                    }
+                }
+            }
+        },
+        "/members/occupations": {
+            "get": {
+                "tags": [
+                    "Member Form Data"
+                ],
+                "summary": "List all occupations",
+                "description": "Returns all occupations ordered alphabetically. Use this to populate the occupation dropdown on the member registration form.",
+                "operationId": "770af66c7f893c4e484f013d68498f8c",
+                "responses": {
+                    "200": {
+                        "description": "A list of occupations",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/OccupationResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/members/educations": {
+            "get": {
+                "tags": [
+                    "Member Form Data"
+                ],
+                "summary": "List all education levels",
+                "description": "Returns all education levels ordered alphabetically. Use this to populate the education dropdown on the member registration form.",
+                "operationId": "e03210adbadc79a69ddf9c886d38bee0",
+                "responses": {
+                    "200": {
+                        "description": "A list of education levels",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/EducationResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/members/departments": {
+            "get": {
+                "tags": [
+                    "Member Form Data"
+                ],
+                "summary": "List all departments",
+                "description": "Returns all departments ordered alphabetically. Use this to populate the department dropdown on the member registration form.",
+                "operationId": "4ec5213c7d6eced852ca24df0baa6ef9",
+                "responses": {
+                    "200": {
+                        "description": "A list of departments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/DepartmentResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/provinces": {
+            "get": {
+                "tags": [
+                    "Provinces"
+                ],
+                "summary": "List all provinces",
+                "description": "Returns a collection of all provinces ordered alphabetically.",
+                "operationId": "82c2724e220c941a897497a8afdd96af",
+                "responses": {
+                    "200": {
+                        "description": "A list of provinces",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ProvinceResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{district}/sectors": {
+            "get": {
+                "tags": [
+                    "Sectors"
+                ],
+                "summary": "List sectors by district",
+                "description": "Returns all sectors belonging to the specified district, ordered alphabetically.",
+                "operationId": "59772a6a9ac16018618b773b385b12fb",
+                "parameters": [
+                    {
+                        "name": "district",
+                        "in": "path",
+                        "description": "The ID of the district",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of sectors for the given district",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SectorResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "District not found"
+                    }
+                }
+            }
+        },
+        "/{cellule}/villages": {
+            "get": {
+                "tags": [
+                    "Villages"
+                ],
+                "summary": "List villages by cellule",
+                "description": "Returns all villages belonging to the specified cellule, ordered alphabetically.",
+                "operationId": "88689b083509e95da4cb02e2002b5bd1",
+                "parameters": [
+                    {
+                        "name": "cellule",
+                        "in": "path",
+                        "description": "The ID of the cellule",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of villages for the given cellule",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/VillageResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cellule not found"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CelluleResource": {
+                "title": "Cellule",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "BIBARE"
+                    },
+                    "sector_id": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "DepartmentResource": {
+                "title": "Department",
+                "description": "A department option for the member registration form",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "PRAISE & WORSHIP"
+                    }
+                },
+                "type": "object"
+            },
+            "DistrictResource": {
+                "title": "District",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "GASABO"
+                    },
+                    "province_id": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "EducationResource": {
+                "title": "Education",
+                "description": "An education level option for the member registration form",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "BACHELOR"
+                    }
+                },
+                "type": "object"
+            },
+            "OccupationResource": {
+                "title": "Occupation",
+                "description": "An occupation option for the member registration form",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "TEACHER"
+                    }
+                },
+                "type": "object"
+            },
+            "ProvinceResource": {
+                "title": "Province",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "KIGALI CITY"
+                    }
+                },
+                "type": "object"
+            },
+            "SectorResource": {
+                "title": "Sector",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "KIMIRONKO"
+                    },
+                    "district_id": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "VillageResource": {
+                "title": "Village",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "AKABAHIZI"
+                    },
+                    "cellule_id": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Provinces",
+            "description": "Operations related to provinces"
+        },
+        {
+            "name": "Districts",
+            "description": "Operations related to districts"
+        },
+        {
+            "name": "Sectors",
+            "description": "Operations related to sectors"
+        },
+        {
+            "name": "Cellules",
+            "description": "Operations related to cellules"
+        },
+        {
+            "name": "Villages",
+            "description": "Operations related to villages"
+        },
+        {
+            "name": "Member Form Data",
+            "description": "Lookup lists used to populate member registration form dropdowns"
+        }
+    ]
+}

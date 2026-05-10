@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\OpenApi\SwaggerGeneratorFactory;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\ServiceProvider;
+use L5Swagger\GeneratorFactory;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -12,7 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Replace l5-swagger's GeneratorFactory with our custom one
+        // so swagger-php uses our PSR-3 logger instead of triggering PHP errors.
+        $this->app->bind(GeneratorFactory::class, SwaggerGeneratorFactory::class);
     }
 
     /**

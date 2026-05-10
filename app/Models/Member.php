@@ -30,8 +30,7 @@ class Member extends Model
         'district_id',
         'sector_id',
         'cellule_id',
-        'village_id',
-        'church_responsibility_id',
+        'village_id'
     ];
 
     protected $casts = [
@@ -60,19 +59,9 @@ class Member extends Model
         return $this->belongsTo(Education::class);
     }
 
-    public function optionDepartment(): BelongsTo
+    public function department(): BelongsTo
     {
-        return $this->belongsTo(OptionDepartment::class, 'option_id');
-    }
-
-    public function talent(): BelongsTo
-    {
-        return $this->belongsTo(Talent::class);
-    }
-
-    public function churchResponsibility(): BelongsTo
-    {
-        return $this->belongsTo(ChurchResponsibility::class);
+        return $this->belongsTo(Department::class);
     }
 
     // ── Geographic relationships ────────────────────────────────────────────
