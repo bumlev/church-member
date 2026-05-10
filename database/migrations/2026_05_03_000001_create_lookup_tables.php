@@ -34,12 +34,7 @@ return new class extends Migration
             $table->string('name', 100);
         });
 
-        Schema::create('option_department', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 100);
-        });
-
-        Schema::create('talent', function (Blueprint $table) {
+        Schema::create('department', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
         });
@@ -50,8 +45,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('talent');
-        Schema::dropIfExists('option_department');
+        Schema::dropIfExists('department');
         Schema::dropIfExists('education');
         Schema::dropIfExists('occupation');
         Schema::dropIfExists('marital_status');
