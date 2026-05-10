@@ -18,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('first_name', 100);
             $table->string('last_name', 100);
+            $table->string('talent', 150);
 
             // Sex (required)
             $table->foreignId('sex_id')->constrained('sex');
@@ -32,8 +33,7 @@ return new class extends Migration
             $table->foreignId('occupation_id')->nullable()->constrained('occupation');
             $table->boolean('employed')->default(false);
             $table->foreignId('education_id')->nullable()->constrained('education');
-            $table->foreignId('option_id')->nullable()->constrained('option_department');
-            $table->foreignId('talent_id')->nullable()->constrained('talent');
+            $table->foreignId('department_id')->nullable()->constrained('department');
 
             $table->string('mobile_tel', 20)->nullable();
             $table->string('email', 150)->nullable();
@@ -45,9 +45,6 @@ return new class extends Migration
             $table->foreignId('sector_id')->nullable()->constrained('sector');
             $table->foreignId('cellule_id')->nullable()->constrained('cellule');
             $table->foreignId('village_id')->nullable()->constrained('village');
-
-            // Optional church responsibility FK
-            $table->foreignId('church_responsibility_id')->nullable()->constrained('church_responsibility');
         });
     }
 

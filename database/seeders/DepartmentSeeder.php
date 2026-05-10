@@ -12,7 +12,7 @@ class DepartmentSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('option_department')->insert([
+        DB::table('department')->insert([
             ['name' => 'ADMINISTRATION'],
             ['name' => 'PRAISE & WORSHIP'],
             ['name' => 'EVANGELISM'],

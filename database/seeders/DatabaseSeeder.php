@@ -32,9 +32,7 @@ class DatabaseSeeder extends Seeder
             MaritalStatusSeeder::class,
             EducationSeeder::class,
             OccupationSeeder::class,
-            TalentSeeder::class,
-            DepartmentSeeder::class,
-            ResponsibilitySeeder::class,
+            DepartmentSeeder::class
         ]);
     }
 }
