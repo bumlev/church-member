@@ -3,6 +3,7 @@
 .env
 .env.backup
 .env.production
+# .env.docker is intentionally NOT ignored — it is a safe template for Docker local dev
 .phpactor.json
 .phpunit.result.cache
 /.codex
@@ -25,3 +26,5 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 church.sql
+DOCKER_GUIDE.md
+DOCKER_PROMPT.md
