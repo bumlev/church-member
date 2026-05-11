@@ -1,0 +1,52 @@
+# Dependencies — never send to Docker build context
+vendor/
+node_modules/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Environment files (will be handled separately)
+.env
+.env.backup
+.env.production
+
+# Docker files themselves (not needed inside container)
+docker-compose.yml
+Dockerfile
+docker/
+
+# Local dev / IDE files
+.editorconfig
+.phpactor.json
+_ide_helper.php
+.idea/
+.vscode/
+.cursor/
+.zed/
+.nova/
+
+# Test artifacts
+.phpunit.result.cache
+.phpunit.cache/
+
+# Build artifacts
+public/build/
+public/hot/
+public/storage/
+
+# Storage (logs, cache — generated at runtime)
+storage/logs/
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+
+# Docs (not needed inside container)
+*.md
+storage/api-docs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
