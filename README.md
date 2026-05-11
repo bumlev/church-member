@@ -1,3 +1,14 @@
+🚀 How to Run
+# First time
+docker-compose up -d
+docker-compose exec app php artisan migrate --seed
+docker-compose exec app php artisan l5-swagger:generate
+
+# Daily use
+docker-compose up -d
+docker-compose down
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
