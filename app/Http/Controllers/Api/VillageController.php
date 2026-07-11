@@ -13,6 +13,7 @@ class VillageController extends Controller
     public function __construct(
         private readonly VillageService $villageService
     ){}
+
     public function index(Cellule $cellule): AnonymousResourceCollection
     {
         return VillageResource::collection(

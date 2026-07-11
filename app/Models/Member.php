@@ -4,7 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * @method static findOrFail(int $id)
+ * @method static orderBy(string $string)
+ * @method static create(array $data)
+ * @property mixed $id
+ */
 class Member extends Model
 {
     public $timestamps = false;
@@ -18,11 +25,7 @@ class Member extends Model
         'marital_status_id',
         'fathers_name',
         'mothers_name',
-        'occupation_id',
         'employed',
-        'education_id',
-        'option_id',
-        'talent_id',
         'mobile_tel',
         'email',
         'fax_number',
@@ -49,19 +52,36 @@ class Member extends Model
         return $this->belongsTo(MaritalStatus::class);
     }
 
-    public function occupation(): BelongsTo
+    public function occupations(): BelongsToMany
     {
-        return $this->belongsTo(Occupation::class);
+        return $this->belongsToMany(Occupation::class, 'member_occupation')->distinct();
     }
 
-    public function education(): BelongsTo
+    public function talents(): BelongsToMany
     {
-        return $this->belongsTo(Education::class);
+        return $this->belongsToMany(Talent::class, 'member_talent')->distinct();
     }
 
-    public function department(): BelongsTo
+    public function educations(): BelongsToMany
     {
-        return $this->belongsTo(Department::class);
+        return $this->belongsToMany(Education::class, 'member_education_faculty')->distinct();
+    }
+
+    public function faculties(): BelongsToMany
+    {
+        return $this->belongsToMany(Faculty::class, 'member_education_faculty')
+            ->withPivot('education_id');
+    }
+
+    public function departments(): BelongsToMany
+    {
+        return $this->belongsToMany(Department::class, 'member_department_church_responsibility')->distinct();
+    }
+
+    public function churchResponsibilities(): BelongsToMany
+    {
+        return $this->belongsToMany(ChurchResponsibility::class, 'member_department_church_responsibility')
+            ->withPivot('department_id');
     }
 
     // ── Geographic relationships ────────────────────────────────────────────

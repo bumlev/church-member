@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use OpenApi\Attributes as OA;
 
+/**
+ * @property mixed $id
+ * @property mixed $name
+ * @property mixed $district_id
+ */
 #[OA\Schema(
     schema: 'SectorResource',
     title: 'Sector',

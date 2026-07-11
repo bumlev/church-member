@@ -12,16 +12,18 @@ class DepartmentSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('department')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
         DB::table('department')->insert([
-            ['name' => 'ADMINISTRATION'],
-            ['name' => 'PRAISE & WORSHIP'],
+            ['name' => 'STUDY & DEVELOPMENT'],
+            ['name' => 'FINANCE'],
+            ['name' => 'WORSHIP'],
+            ['name' => 'FELLOWSHIP'],
             ['name' => 'EVANGELISM'],
-            ['name' => 'SUNDAY SCHOOL'],
-            ['name' => 'YOUTH DEPARTMENT'],
-            ['name' => 'MOTHERS\' DEPARTMENT'],
-            ['name' => 'FATHERS\' DEPARTMENT'],
-            ['name' => 'SOCIAL CARE'],
-            ['name' => 'SECURITY'],
+            ['name' => 'MINISTRY'],
+            ['name' => 'DISCIPLESHIP'],
         ]);
     }
 }

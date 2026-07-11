@@ -28,13 +28,45 @@ return new class extends Migration
             $table->string('name', 100);
         });
 
+        Schema::create('department', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 100);
+        });
+
+        Schema::create('church_responsibility' , function (Blueprint $table){;
+            $table->id();
+            $table->string('name', 100);
+            $table->foreignId('department_id')->constrained('department');
+        });
 
         Schema::create('education', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
         });
 
-        Schema::create('department', function (Blueprint $table) {
+
+        Schema::create('faculty', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 100);
+        });
+
+        Schema::create('education_faculty', function (Blueprint $table) {
+            $table->foreignId('education_id')->constrained('education')->onDelete('cascade');
+            $table->foreignId('faculty_id')->constrained('faculty')->onDelete('cascade');
+            $table->primary(['education_id', 'faculty_id']);
+        });
+
+        Schema::create('cell', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 100);
+        });
+
+        Schema::create('talent', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 100);
+        });
+
+        Schema::create('spiritual_gift' , function (Blueprint $table){
             $table->id();
             $table->string('name', 100);
         });
@@ -50,6 +82,12 @@ return new class extends Migration
         Schema::dropIfExists('occupation');
         Schema::dropIfExists('marital_status');
         Schema::dropIfExists('sex');
+        Schema::dropIfExists('education_faculty');
+        Schema::dropIfExists('faculty');
+        Schema::dropIfExists('cell');
+        Schema::dropIfExists('church_responsibility');
+        Schema::dropIfExists('talent');
+        Schema::dropIfExists('spiritual_gift');
 
     }
 };

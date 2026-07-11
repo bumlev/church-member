@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -16,9 +17,14 @@ class Department extends Model
 
     protected $fillable = ['name'];
 
-    public function members(): HasMany
+    public function members(): BelongsToMany
     {
-        return $this->hasMany(Member::class);
+        return $this->belongsToMany(Member::class, 'member_department_church_responsibility')->distinct();
+    }
+
+    public function church_responsibilities(): HasMany
+    {
+        return $this->hasMany(ChurchResponsibility::class);
     }
 }
 
