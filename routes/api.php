@@ -17,15 +17,20 @@ Route::prefix('v1')->group(function () {
     Route::get('/{sector}/cellules',    [CelluleController::class,  'index']);
     Route::get('/{cellule}/villages',   [VillageController::class,  'index']);
 
-    // ── Member form data (lookup dropdowns) ─────────────────────────────────
+
     Route::prefix('members')->group(function () {
-        Route::get('occupations', [MemberController::class, 'occupations']);
-        Route::get('educations',  [MemberController::class, 'educations']);
-        Route::get('departments', [MemberController::class, 'departments']);
+        // ── Member form data (lookup dropdowns) ─────────────────────────────────
+        Route::get('occupations',    [MemberController::class, 'occupations']);
+        Route::get('talents',        [MemberController::class, 'talents']);
+        Route::get('educations',     [MemberController::class, 'educations']);
+        Route::get('departments',    [MemberController::class, 'departments']);
+        Route::get('educations/{education}/faculties', [MemberController::class, 'faculties']);
+        Route::get('departments/{department}/church-responsibilities', [MemberController::class, 'churchResponsibilities']);
     });
+
+    // ── Member resource (index, store, show, update) ───────────────────────────
+    Route::apiResource('members', MemberController::class)->except('destroy');
 });
-
-
 
 
 

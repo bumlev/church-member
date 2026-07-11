@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property mixed $id
+ * @method static where(string $string, mixed $id)
+ */
 class Sector extends Model
 {
     public $timestamps = false;

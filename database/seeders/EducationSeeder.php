@@ -15,7 +15,7 @@ class EducationSeeder extends Seeder
         DB::table('education')->insert([
             ['name' => 'PRIMARY'],
             ['name' => 'SECONDARY'],
-            ['name' => 'UNIVERSITY'],
+            ['name' => 'BACHELOR'],
             ['name' => 'MASTERS'],
             ['name' => 'DOCTORATE'],
             ['name' => 'PROFESSOR'],

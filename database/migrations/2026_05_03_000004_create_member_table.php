@@ -34,6 +34,7 @@ return new class extends Migration
             $table->boolean('employed')->default(false);
             $table->foreignId('education_id')->nullable()->constrained('education');
             $table->foreignId('department_id')->nullable()->constrained('department');
+            $table->foreignId('church_responsibility_id')->nullable()->constrained('church_responsibility');
 
             $table->string('mobile_tel', 20)->nullable();
             $table->string('email', 150)->nullable();
