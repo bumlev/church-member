@@ -20,6 +20,8 @@ class StoreMemberRequest extends FormRequest
             'last_name'         => ['required', 'string', 'max:100'],
             'talent'            => ['required', 'array', 'min:1'],
             'talent.*'          => ['integer', 'distinct', 'exists:talent,id'],
+            'spiritual_gift'    => ['required', 'array', 'min:1'],
+            'spiritual_gift.*'  => ['integer', 'distinct', 'exists:spiritual_gift,id'],
             'sex_id'            => ['required', 'integer', 'exists:sex,id'],
             'marital_status_id' => ['required', 'integer', 'exists:marital_status,id'],
 
@@ -48,6 +50,7 @@ class StoreMemberRequest extends FormRequest
             'district_id'       => ['nullable', 'integer', 'exists:district,id'],
             'sector_id'         => ['nullable', 'integer', 'exists:sector,id'],
             'cellule_id'        => ['nullable', 'integer', 'exists:cellule,id'],
+            'cell_id'           => ['nullable', 'integer', 'exists:cell,id'],
             'village_id'        => ['nullable', 'integer', 'exists:village,id'],
         ];
 
@@ -85,6 +88,12 @@ class StoreMemberRequest extends FormRequest
             'talent.*.integer'            => 'Each selected talent must be a valid ID.',
             'talent.*.distinct'           => 'Duplicate talent selected.',
             'talent.*.exists'             => 'Selected talent is invalid.',
+            'spiritual_gift.required'     => 'Spiritual gift is required.',
+            'spiritual_gift.array'        => 'Spiritual gift must be a list of spiritual gift IDs.',
+            'spiritual_gift.min'          => 'Select at least one spiritual gift.',
+            'spiritual_gift.*.integer'    => 'Each selected spiritual gift must be a valid ID.',
+            'spiritual_gift.*.distinct'   => 'Duplicate spiritual gift selected.',
+            'spiritual_gift.*.exists'     => 'Selected spiritual gift is invalid.',
             'sex_id.required'            => 'Sex is required.',
             'sex_id.exists'              => 'Selected sex is invalid.',
             'marital_status_id.required' => 'Marital status is required.',
@@ -114,6 +123,7 @@ class StoreMemberRequest extends FormRequest
             'district_id.exists'         => 'Selected district is invalid.',
             'sector_id.exists'           => 'Selected sector is invalid.',
             'cellule_id.exists'          => 'Selected cellule is invalid.',
+            'cell_id.exists'             => 'Selected cell is invalid.',
             'village_id.exists'          => 'Selected village is invalid.',
         ];
     }
