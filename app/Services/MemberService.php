@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Collection;
 
 class MemberService
 {
-    private const MEMBER_RELATIONS = [
-        'sex', 'educations', 'faculties', 'departments', 'churchResponsibilities', 'talents', 'occupations',
+    private const array MEMBER_RELATIONS = [
+        'sex', 'educations', 'faculties', 'departments', 'churchResponsibilities', 'talents', 'occupations', 'spiritualGifts',
     ];
 
     public static function getAllMembers(): Collection
@@ -33,6 +33,8 @@ class MemberService
         unset($data['department']);
         $talentIds = $data['talent'] ?? [];
         unset($data['talent']);
+        $spiritualGiftIds = $data['spiritual_gift'] ?? [];
+        unset($data['spiritual_gift']);
         $occupationIds = $data['occupation'] ?? [];
         unset($data['occupation']);
 
@@ -40,6 +42,7 @@ class MemberService
         $member->faculties()->sync(self::pivotFromEducationEntries($educationEntries));
         $member->churchResponsibilities()->sync(self::pivotFromDepartmentEntries($departmentEntries));
         $member->talents()->sync($talentIds);
+        $member->spiritualGifts()->sync($spiritualGiftIds);
         $member->occupations()->sync($occupationIds);
 
         return $member->fresh(self::MEMBER_RELATIONS);
@@ -61,6 +64,11 @@ class MemberService
             $member->talents()->sync($data['talent']);
         }
         unset($data['talent']);
+
+        if (array_key_exists('spiritual_gift', $data)) {
+            $member->spiritualGifts()->sync($data['spiritual_gift']);
+        }
+        unset($data['spiritual_gift']);
 
         if (array_key_exists('occupation', $data)) {
             $member->occupations()->sync($data['occupation']);

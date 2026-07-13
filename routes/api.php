@@ -22,6 +22,7 @@ Route::prefix('v1')->group(function () {
         // ── Member form data (lookup dropdowns) ─────────────────────────────────
         Route::get('occupations',    [MemberController::class, 'occupations']);
         Route::get('talents',        [MemberController::class, 'talents']);
+        Route::get('spiritual-gifts', [MemberController::class, 'spiritualGifts']);
         Route::get('educations',     [MemberController::class, 'educations']);
         Route::get('departments',    [MemberController::class, 'departments']);
         Route::get('educations/{education}/faculties', [MemberController::class, 'faculties']);

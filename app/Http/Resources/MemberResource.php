@@ -22,6 +22,7 @@ use OpenApi\Attributes as OA;
  * @property mixed $district_id
  * @property mixed $sector_id
  * @property mixed $cellule_id
+ * @property mixed $cell_id
  * @property mixed $village_id
  */
 #[OA\Schema(
@@ -36,6 +37,11 @@ use OpenApi\Attributes as OA;
             property: 'talents',
             type: 'array',
             items: new OA\Items(ref: '#/components/schemas/TalentResource')
+        ),
+        new OA\Property(
+            property: 'spiritual_gifts',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/SpiritualGiftResource')
         ),
         new OA\Property(property: 'email',              type: 'string',  example: 'john.doe@example.com', nullable: true),
         new OA\Property(property: 'mobile_tel',         type: 'string',  example: '+250788000000',        nullable: true),
@@ -74,6 +80,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'district_id',        type: 'integer', example: 1),
         new OA\Property(property: 'sector_id',          type: 'integer', example: 1),
         new OA\Property(property: 'cellule_id',         type: 'integer', example: 1),
+        new OA\Property(property: 'cell_id',            type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'village_id',         type: 'integer', example: 1),
     ]
 )]
@@ -86,6 +93,7 @@ class MemberResource extends JsonResource
             'first_name'        => $this->first_name,
             'last_name'         => $this->last_name,
             'talents'           => TalentResource::collection($this->whenLoaded('talents')),
+            'spiritual_gifts'   => SpiritualGiftResource::collection($this->whenLoaded('spiritualGifts')),
             'email'             => $this->email,
             'mobile_tel'        => $this->mobile_tel,
             'employed'          => $this->employed,
@@ -103,6 +111,7 @@ class MemberResource extends JsonResource
             'district_id'       => $this->district_id,
             'sector_id'         => $this->sector_id,
             'cellule_id'        => $this->cellule_id,
+            'cell_id'           => $this->cell_id,
             'village_id'        => $this->village_id,
         ];
     }

@@ -33,6 +33,7 @@ class Member extends Model
         'district_id',
         'sector_id',
         'cellule_id',
+        'cell_id',
         'village_id'
     ];
 
@@ -60,6 +61,11 @@ class Member extends Model
     public function talents(): BelongsToMany
     {
         return $this->belongsToMany(Talent::class, 'member_talent')->distinct();
+    }
+
+    public function spiritualGifts(): BelongsToMany
+    {
+        return $this->belongsToMany(SpiritualGift::class, 'member_spiritual_gift')->distinct();
     }
 
     public function educations(): BelongsToMany
@@ -104,6 +110,11 @@ class Member extends Model
     public function cellule(): BelongsTo
     {
         return $this->belongsTo(Cellule::class);
+    }
+
+    public function cell(): BelongsTo
+    {
+        return $this->belongsTo(Cell::class);
     }
 
     public function village(): BelongsTo

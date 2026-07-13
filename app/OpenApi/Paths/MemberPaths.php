@@ -44,7 +44,7 @@ class MemberPaths
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['first_name', 'last_name', 'talent', 'sex_id', 'marital_status_id'],
+                required: ['first_name', 'last_name', 'talent', 'spiritual_gift', 'sex_id', 'marital_status_id'],
                 properties: [
                     new OA\Property(property: 'first_name',        type: 'string',  example: 'John',          maxLength: 100),
                     new OA\Property(property: 'last_name',         type: 'string',  example: 'Doe',           maxLength: 100),
@@ -54,6 +54,13 @@ class MemberPaths
                         type: 'array',
                         items: new OA\Items(type: 'integer'),
                         example: [1, 2]
+                    ),
+                    new OA\Property(
+                        property: 'spiritual_gift',
+                        description: 'IDs of spiritual gifts selected (at least one required)',
+                        type: 'array',
+                        items: new OA\Items(type: 'integer'),
+                        example: [1, 3]
                     ),
                     new OA\Property(property: 'sex_id',            type: 'integer', example: 1),
                     new OA\Property(property: 'marital_status_id', type: 'integer', example: 1),
@@ -115,6 +122,7 @@ class MemberPaths
                     new OA\Property(property: 'district_id',       type: 'integer', example: 1,               nullable: true),
                     new OA\Property(property: 'sector_id',         type: 'integer', example: 1,               nullable: true),
                     new OA\Property(property: 'cellule_id',        type: 'integer', example: 1,               nullable: true),
+                    new OA\Property(property: 'cell_id',           type: 'integer', example: 1,               nullable: true),
                     new OA\Property(property: 'village_id',        type: 'integer', example: 1,               nullable: true),
                 ]
             )
@@ -212,6 +220,14 @@ class MemberPaths
                         example: [1, 2],
                         nullable: true
                     ),
+                    new OA\Property(
+                        property: 'spiritual_gift',
+                        description: 'IDs of spiritual gifts selected (at least one required if provided)',
+                        type: 'array',
+                        items: new OA\Items(type: 'integer'),
+                        example: [1, 3],
+                        nullable: true
+                    ),
                     new OA\Property(property: 'sex_id',            type: 'integer', example: 1,                  nullable: true),
                     new OA\Property(property: 'marital_status_id', type: 'integer', example: 1,                  nullable: true),
                     new OA\Property(property: 'fathers_name',      type: 'string',  example: 'James Doe',        nullable: true),
@@ -272,6 +288,7 @@ class MemberPaths
                     new OA\Property(property: 'district_id',       type: 'integer', example: 1,                  nullable: true),
                     new OA\Property(property: 'sector_id',         type: 'integer', example: 1,                  nullable: true),
                     new OA\Property(property: 'cellule_id',        type: 'integer', example: 1,                  nullable: true),
+                    new OA\Property(property: 'cell_id',           type: 'integer', example: 1,                  nullable: true),
                     new OA\Property(property: 'village_id',        type: 'integer', example: 1,                  nullable: true),
                 ]
             )
@@ -375,6 +392,31 @@ class MemberPaths
         ]
     )]
     public function talents(): void {}
+
+    // ── Spiritual gifts ──────────────────────────────────────────────────────
+    #[OA\PathItem(path: '/members/spiritual-gifts')]
+    #[OA\Get(
+        path: '/members/spiritual-gifts',
+        description: 'Returns all spiritual gifts ordered alphabetically. Use this to populate the spiritual gift multi-select on the member registration form.',
+        summary: 'List all spiritual gifts',
+        tags: ['Member Form Data'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'A list of spiritual gifts',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/SpiritualGiftResource')
+                        ),
+                    ]
+                )
+            ),
+        ]
+    )]
+    public function spiritualGifts(): void {}
 
     // ── Educations ───────────────────────────────────────────────────────────
     #[OA\PathItem(path: '/members/educations')]
