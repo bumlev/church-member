@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\CelluleController;
 use App\Http\Controllers\Api\DistrictController;
+use App\Http\Controllers\Api\FamilyController;
 use App\Http\Controllers\Api\MemberController;
 use App\Http\Controllers\Api\ProvinceController;
 use App\Http\Controllers\Api\SectorController;
@@ -31,6 +32,15 @@ Route::prefix('v1')->group(function () {
 
     // ── Member resource (index, store, show, update) ───────────────────────────
     Route::apiResource('members', MemberController::class)->except('destroy');
+
+    Route::prefix('families')->group(function () {
+        // ── Family membership (add/remove a member from a family) ──────────────
+        Route::post('{family}/members', [FamilyController::class, 'addMember']);
+        Route::delete('{family}/members/{member}', [FamilyController::class, 'removeMember']);
+    });
+
+    // ── Family resource (index, store, show, update, destroy) ──────────────────
+    Route::apiResource('families', FamilyController::class);
 });
 
 

@@ -24,6 +24,7 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: 'Villages',         description: 'Operations related to villages')]
 #[OA\Tag(name: 'Members',          description: 'Operations related to church members')]
 #[OA\Tag(name: 'Member Form Data', description: 'Lookup lists used to populate member registration form dropdowns')]
+#[OA\Tag(name: 'Families',         description: 'Operations related to families and the members that belong to them')]
 class ApiInfo {}
 
 

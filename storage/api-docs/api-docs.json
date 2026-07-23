@@ -106,6 +106,534 @@
                 }
             }
         },
+        "/families": {
+            "get": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "List all families",
+                "description": "Returns a collection of all families ordered by family name, together with their members.",
+                "operationId": "9339b67ed066a0fea0508296102039ef",
+                "responses": {
+                    "200": {
+                        "description": "A list of families",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/FamilyResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "Create a new family",
+                "description": "Creates a new family, optionally assigning members and the role each plays (father, mother, child, guardian). A family may have at most one active father and one active mother at a time.",
+                "operationId": "5c2eefe48f707f79ef7ace002e979600",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "family_name"
+                                ],
+                                "properties": {
+                                    "family_name": {
+                                        "type": "string",
+                                        "example": "The Doe Family",
+                                        "maxLength": 150
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "KG 11 Ave, Kigali",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "date_formed": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-06-12",
+                                        "nullable": true
+                                    },
+                                    "members": {
+                                        "description": "Members to assign to this family, each paired with the role they play",
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "member_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "role_type": {
+                                                    "type": "string",
+                                                    "example": "father",
+                                                    "enum": [
+                                                        "father",
+                                                        "mother",
+                                                        "child",
+                                                        "guardian"
+                                                    ]
+                                                },
+                                                "start_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2010-06-12",
+                                                    "nullable": true
+                                                },
+                                                "end_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": null,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Family created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The family name field is required."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "family_name": [
+                                                    "The family name field is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/families/{id}": {
+            "get": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "Get a single family",
+                "description": "Returns the details of a specific family by its ID, including its members and their roles.",
+                "operationId": "b8b35010db6d75c849d339ff7301eedd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the family",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Family found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Family not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\Family] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "Update an existing family",
+                "description": "Updates a family record. All fields are optional. Passing `members` replaces the existing member/role assignments entirely.",
+                "operationId": "e5bd4a58dc0bf2f94fb006a14d301a09",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the family to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "family_name": {
+                                        "type": "string",
+                                        "example": "The Doe Family",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "KG 11 Ave, Kigali",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "date_formed": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-06-12",
+                                        "nullable": true
+                                    },
+                                    "members": {
+                                        "description": "Replaces the members assigned to this family, each paired with the role they play",
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "member_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "role_type": {
+                                                    "type": "string",
+                                                    "example": "father",
+                                                    "enum": [
+                                                        "father",
+                                                        "mother",
+                                                        "child",
+                                                        "guardian"
+                                                    ]
+                                                },
+                                                "start_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2010-06-12",
+                                                    "nullable": true
+                                                },
+                                                "end_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": null,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Family updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Family not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\Family] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This family already has an active father."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "members": [
+                                                    "This family already has an active father."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "Delete a family",
+                "description": "Deletes a family record. Membership rows for this family are removed via cascading delete.",
+                "operationId": "017e9c4733f72f3b93821d0f4e3e80a9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the family to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Family deleted successfully"
+                    },
+                    "404": {
+                        "description": "Family not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\Family] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/families/{family}/members": {
+            "post": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "Add a member to a family",
+                "description": "Assigns a member to a family with a given role. Rejects a second active (no end_date) father or mother for the same family.",
+                "operationId": "7b15f686fa5775af609913f09c16515a",
+                "parameters": [
+                    {
+                        "name": "family",
+                        "in": "path",
+                        "description": "The ID of the family",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "member_id",
+                                    "role_type"
+                                ],
+                                "properties": {
+                                    "member_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "role_type": {
+                                        "type": "string",
+                                        "example": "child",
+                                        "enum": [
+                                            "father",
+                                            "mother",
+                                            "child",
+                                            "guardian"
+                                        ]
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-06-12",
+                                        "nullable": true
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": null,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Member added to the family",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This family already has an active father."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "members": [
+                                                    "This family already has an active father."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/families/{family}/members/{member}": {
+            "delete": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "Remove a member from a family",
+                "description": "Removes all role assignments a member holds within the given family.",
+                "operationId": "9e4396bd0d82e230ba4b0ff6efffa46b",
+                "parameters": [
+                    {
+                        "name": "family",
+                        "in": "path",
+                        "description": "The ID of the family",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "member",
+                        "in": "path",
+                        "description": "The ID of the member to remove",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Member removed from the family"
+                    }
+                }
+            }
+        },
         "/members": {
             "get": {
                 "tags": [
@@ -140,12 +668,12 @@
                     "Members"
                 ],
                 "summary": "Create a new member",
-                "description": "Creates a new church member record. Returns the created member.",
+                "description": "Creates a new church member record. Returns the created member. Submitted as multipart/form-data to support the optional picture upload.",
                 "operationId": "e4c9ad62d98c8c2dd7c232daa70c0fb2",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "required": [
                                     "first_name",
@@ -167,7 +695,7 @@
                                         "maxLength": 100
                                     },
                                     "talent": {
-                                        "description": "IDs of talents selected (at least one required)",
+                                        "description": "IDs of talents selected (at least one required). Submitted as multipart/form-data: use repeated fields (talent[]=1&talent[]=2), a single JSON-encoded string (e.g. \"[1,2]\"), a comma-separated string (e.g. \"1,2\"), or a bare single ID (e.g. talent=1).",
                                         "type": "array",
                                         "items": {
                                             "type": "integer"
@@ -175,10 +703,11 @@
                                         "example": [
                                             1,
                                             2
-                                        ]
+                                        ],
+                                        "minItems": 1
                                     },
                                     "spiritual_gift": {
-                                        "description": "IDs of spiritual gifts selected (at least one required)",
+                                        "description": "IDs of spiritual gifts selected (at least one required). Submitted as multipart/form-data: use repeated fields (spiritual_gift[]=1&spiritual_gift[]=3), a single JSON-encoded string (e.g. \"[1,3]\"), a comma-separated string (e.g. \"1,3\"), or a bare single ID (e.g. spiritual_gift=1).",
                                         "type": "array",
                                         "items": {
                                             "type": "integer"
@@ -186,7 +715,8 @@
                                         "example": [
                                             1,
                                             3
-                                        ]
+                                        ],
+                                        "minItems": 1
                                     },
                                     "sex_id": {
                                         "type": "integer",
@@ -199,20 +729,23 @@
                                     "fathers_name": {
                                         "type": "string",
                                         "example": "James Doe",
-                                        "nullable": true
+                                        "nullable": true,
+                                        "maxLength": 150
                                     },
                                     "mothers_name": {
                                         "type": "string",
                                         "example": "Mary Doe",
-                                        "nullable": true
+                                        "nullable": true,
+                                        "maxLength": 150
                                     },
                                     "employed": {
+                                        "description": "Submitted as multipart/form-data as the literal string \"true\" or \"false\" (also accepts \"1\"/\"0\").",
                                         "type": "boolean",
                                         "example": true,
                                         "nullable": true
                                     },
                                     "occupation": {
-                                        "description": "IDs of occupations selected",
+                                        "description": "IDs of occupations selected. Submitted as multipart/form-data: use repeated fields (occupation[]=2), a single JSON-encoded string (e.g. \"[2]\"), a comma-separated string (e.g. \"2,4\"), or a bare single ID (e.g. occupation=2).",
                                         "type": "array",
                                         "items": {
                                             "type": "integer"
@@ -223,70 +756,74 @@
                                         "nullable": true
                                     },
                                     "education": {
-                                        "description": "Education levels selected, each paired with its own faculty IDs",
-                                        "type": "array",
-                                        "items": {
-                                            "properties": {
-                                                "education_id": {
-                                                    "type": "integer",
-                                                    "example": 3
-                                                },
-                                                "faculty": {
-                                                    "description": "IDs of faculties (must belong to this entry's education_id)",
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "integer"
-                                                    },
-                                                    "example": [
-                                                        4,
-                                                        5
-                                                    ],
-                                                    "nullable": true
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
+                                        "description": "Education levels selected, each paired with its own faculty IDs. This is an array of objects, which cannot be expressed as a plain multipart/form-data field — submit it as a single JSON-encoded string, e.g. [{\"education_id\":3,\"faculty\":[4,5]}].",
+                                        "type": "string",
+                                        "example": "[{\"education_id\":3,\"faculty\":[4,5]}]",
                                         "nullable": true
                                     },
                                     "department": {
-                                        "description": "Departments selected, each paired with its own church responsibility IDs",
-                                        "type": "array",
-                                        "items": {
-                                            "properties": {
-                                                "department_id": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "church_responsibility": {
-                                                    "description": "IDs of church responsibilities (must belong to this entry's department_id)",
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "integer"
-                                                    },
-                                                    "example": [
-                                                        1,
-                                                        2
-                                                    ],
-                                                    "nullable": true
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
+                                        "description": "Departments selected, each paired with its own church responsibility IDs. This is an array of objects, which cannot be expressed as a plain multipart/form-data field — submit it as a single JSON-encoded string, e.g. [{\"department_id\":1,\"church_responsibility\":[1,2]}].",
+                                        "type": "string",
+                                        "example": "[{\"department_id\":1,\"church_responsibility\":[1,2]}]",
                                         "nullable": true
                                     },
                                     "mobile_tel": {
                                         "type": "string",
                                         "example": "+250788000000",
-                                        "nullable": true
+                                        "nullable": true,
+                                        "maxLength": 20
                                     },
                                     "email": {
                                         "type": "string",
+                                        "format": "email",
                                         "example": "john@example.com",
-                                        "nullable": true
+                                        "nullable": true,
+                                        "maxLength": 150
                                     },
                                     "fax_number": {
                                         "type": "string",
                                         "example": null,
+                                        "nullable": true,
+                                        "maxLength": 20
+                                    },
+                                    "national_id": {
+                                        "type": "string",
+                                        "example": "1199080012345678",
+                                        "nullable": true,
+                                        "maxLength": 20
+                                    },
+                                    "picture": {
+                                        "description": "Image file (jpeg, jpg, png, webp), max 2MB",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "date_birthday": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-05-12",
+                                        "nullable": true
+                                    },
+                                    "date_salvation": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2005-03-20",
+                                        "nullable": true
+                                    },
+                                    "date_baptism": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2005-06-15",
+                                        "nullable": true
+                                    },
+                                    "member_since": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-01-01",
                                         "nullable": true
                                     },
                                     "province_id": {
@@ -427,7 +964,7 @@
                     "Members"
                 ],
                 "summary": "Update an existing member",
-                "description": "Updates a church member record. All fields are optional (PATCH behaviour). Returns the updated member.",
+                "description": "Updates a church member record. All fields are optional (PATCH behaviour). Returns the updated member. Passing a new `picture` replaces and deletes the previous one; omitting it leaves the current picture untouched. Submitted as multipart/form-data to support the picture upload — since PHP does not parse multipart bodies on PUT requests, send this as a POST with a `_method=PUT` field (Laravel's standard method-spoofing).",
                 "operationId": "72d09e50065896e89848007fa4d4930c",
                 "parameters": [
                     {
@@ -444,7 +981,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "properties": {
                                     "first_name": {
@@ -460,7 +997,7 @@
                                         "maxLength": 100
                                     },
                                     "talent": {
-                                        "description": "IDs of talents selected (at least one required if provided)",
+                                        "description": "IDs of talents selected (at least one required if provided). Submitted as multipart/form-data: use repeated fields (talent[]=1&talent[]=2), a single JSON-encoded string (e.g. \"[1,2]\"), a comma-separated string (e.g. \"1,2\"), or a bare single ID (e.g. talent=1).",
                                         "type": "array",
                                         "items": {
                                             "type": "integer"
@@ -469,10 +1006,11 @@
                                             1,
                                             2
                                         ],
-                                        "nullable": true
+                                        "nullable": true,
+                                        "minItems": 1
                                     },
                                     "spiritual_gift": {
-                                        "description": "IDs of spiritual gifts selected (at least one required if provided)",
+                                        "description": "IDs of spiritual gifts selected (at least one required if provided). Submitted as multipart/form-data: use repeated fields (spiritual_gift[]=1&spiritual_gift[]=3), a single JSON-encoded string (e.g. \"[1,3]\"), a comma-separated string (e.g. \"1,3\"), or a bare single ID (e.g. spiritual_gift=1).",
                                         "type": "array",
                                         "items": {
                                             "type": "integer"
@@ -481,7 +1019,8 @@
                                             1,
                                             3
                                         ],
-                                        "nullable": true
+                                        "nullable": true,
+                                        "minItems": 1
                                     },
                                     "sex_id": {
                                         "type": "integer",
@@ -496,20 +1035,23 @@
                                     "fathers_name": {
                                         "type": "string",
                                         "example": "James Doe",
-                                        "nullable": true
+                                        "nullable": true,
+                                        "maxLength": 150
                                     },
                                     "mothers_name": {
                                         "type": "string",
                                         "example": "Mary Doe",
-                                        "nullable": true
+                                        "nullable": true,
+                                        "maxLength": 150
                                     },
                                     "employed": {
+                                        "description": "Submitted as multipart/form-data as the literal string \"true\" or \"false\" (also accepts \"1\"/\"0\").",
                                         "type": "boolean",
                                         "example": true,
                                         "nullable": true
                                     },
                                     "occupation": {
-                                        "description": "IDs of occupations selected",
+                                        "description": "IDs of occupations selected. Submitted as multipart/form-data: use repeated fields (occupation[]=2), a single JSON-encoded string (e.g. \"[2]\"), a comma-separated string (e.g. \"2,4\"), or a bare single ID (e.g. occupation=2).",
                                         "type": "array",
                                         "items": {
                                             "type": "integer"
@@ -520,70 +1062,74 @@
                                         "nullable": true
                                     },
                                     "education": {
-                                        "description": "Education levels selected, each paired with its own faculty IDs",
-                                        "type": "array",
-                                        "items": {
-                                            "properties": {
-                                                "education_id": {
-                                                    "type": "integer",
-                                                    "example": 3
-                                                },
-                                                "faculty": {
-                                                    "description": "IDs of faculties (must belong to this entry's education_id)",
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "integer"
-                                                    },
-                                                    "example": [
-                                                        4,
-                                                        5
-                                                    ],
-                                                    "nullable": true
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
+                                        "description": "Education levels selected, each paired with its own faculty IDs. This is an array of objects, which cannot be expressed as a plain multipart/form-data field — submit it as a single JSON-encoded string, e.g. [{\"education_id\":3,\"faculty\":[4,5]}].",
+                                        "type": "string",
+                                        "example": "[{\"education_id\":3,\"faculty\":[4,5]}]",
                                         "nullable": true
                                     },
                                     "department": {
-                                        "description": "Departments selected, each paired with its own church responsibility IDs",
-                                        "type": "array",
-                                        "items": {
-                                            "properties": {
-                                                "department_id": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "church_responsibility": {
-                                                    "description": "IDs of church responsibilities (must belong to this entry's department_id)",
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "integer"
-                                                    },
-                                                    "example": [
-                                                        1,
-                                                        2
-                                                    ],
-                                                    "nullable": true
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
+                                        "description": "Departments selected, each paired with its own church responsibility IDs. This is an array of objects, which cannot be expressed as a plain multipart/form-data field — submit it as a single JSON-encoded string, e.g. [{\"department_id\":1,\"church_responsibility\":[1,2]}].",
+                                        "type": "string",
+                                        "example": "[{\"department_id\":1,\"church_responsibility\":[1,2]}]",
                                         "nullable": true
                                     },
                                     "mobile_tel": {
                                         "type": "string",
                                         "example": "+250788000000",
-                                        "nullable": true
+                                        "nullable": true,
+                                        "maxLength": 20
                                     },
                                     "email": {
                                         "type": "string",
+                                        "format": "email",
                                         "example": "john@example.com",
-                                        "nullable": true
+                                        "nullable": true,
+                                        "maxLength": 150
                                     },
                                     "fax_number": {
                                         "type": "string",
                                         "example": null,
+                                        "nullable": true,
+                                        "maxLength": 20
+                                    },
+                                    "national_id": {
+                                        "type": "string",
+                                        "example": "1199080012345678",
+                                        "nullable": true,
+                                        "maxLength": 20
+                                    },
+                                    "picture": {
+                                        "description": "Image file (jpeg, jpg, png, webp), max 2MB",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "date_birthday": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-05-12",
+                                        "nullable": true
+                                    },
+                                    "date_salvation": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2005-03-20",
+                                        "nullable": true
+                                    },
+                                    "date_baptism": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2005-06-15",
+                                        "nullable": true
+                                    },
+                                    "member_since": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-01-01",
                                         "nullable": true
                                     },
                                     "province_id": {
@@ -1166,6 +1712,79 @@
                 },
                 "type": "object"
             },
+            "FamilyMemberResource": {
+                "title": "FamilyMember",
+                "description": "A member within a family, together with the role they play in it",
+                "properties": {
+                    "member_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "example": "John"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "example": "Doe"
+                    },
+                    "role_type": {
+                        "type": "string",
+                        "example": "father",
+                        "enum": [
+                            "father",
+                            "mother",
+                            "child",
+                            "guardian"
+                        ]
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2010-06-12",
+                        "nullable": true
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": null,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "FamilyResource": {
+                "title": "Family",
+                "description": "A family unit grouping members by the role they play within it",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "family_name": {
+                        "type": "string",
+                        "example": "The Doe Family"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "KG 11 Ave, Kigali",
+                        "nullable": true
+                    },
+                    "date_formed": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2010-06-12",
+                        "nullable": true
+                    },
+                    "members": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FamilyMemberResource"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "MemberResource": {
                 "title": "Member",
                 "description": "A church member record",
@@ -1221,6 +1840,41 @@
                     "fax_number": {
                         "type": "string",
                         "example": null,
+                        "nullable": true
+                    },
+                    "national_id": {
+                        "type": "string",
+                        "example": "1199080012345678",
+                        "nullable": true
+                    },
+                    "picture_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://localhost/storage/members/pictures/abc123.jpg",
+                        "nullable": true
+                    },
+                    "date_birthday": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "1990-05-12",
+                        "nullable": true
+                    },
+                    "date_salvation": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2005-03-20",
+                        "nullable": true
+                    },
+                    "date_baptism": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2005-06-15",
+                        "nullable": true
+                    },
+                    "member_since": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2010-01-01",
                         "nullable": true
                     },
                     "sex_id": {
@@ -1414,6 +2068,10 @@
         {
             "name": "Member Form Data",
             "description": "Lookup lists used to populate member registration form dropdowns"
+        },
+        {
+            "name": "Families",
+            "description": "Operations related to families and the members that belong to them"
         }
     ]
 }

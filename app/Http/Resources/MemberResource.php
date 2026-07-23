@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 use OpenApi\Attributes as OA;
 
 /**
@@ -16,6 +17,12 @@ use OpenApi\Attributes as OA;
  * @property mixed $fathers_name
  * @property mixed $mothers_name
  * @property mixed $fax_number
+ * @property mixed $national_id
+ * @property mixed $picture
+ * @property mixed $date_birthday
+ * @property mixed $date_salvation
+ * @property mixed $date_baptism
+ * @property mixed $member_since
  * @property mixed $sex_id
  * @property mixed $marital_status_id
  * @property mixed $province_id
@@ -49,6 +56,12 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'fathers_name',       type: 'string',  example: 'James Doe',            nullable: true),
         new OA\Property(property: 'mothers_name',       type: 'string',  example: 'Mary Doe',             nullable: true),
         new OA\Property(property: 'fax_number',         type: 'string',  example: null,                   nullable: true),
+        new OA\Property(property: 'national_id',        type: 'string',  example: '1199080012345678',     nullable: true),
+        new OA\Property(property: 'picture_url',        type: 'string',  format: 'uri', example: 'http://localhost/storage/members/pictures/abc123.jpg', nullable: true),
+        new OA\Property(property: 'date_birthday',      type: 'string',  format: 'date', example: '1990-05-12', nullable: true),
+        new OA\Property(property: 'date_salvation',     type: 'string',  format: 'date', example: '2005-03-20', nullable: true),
+        new OA\Property(property: 'date_baptism',       type: 'string',  format: 'date', example: '2005-06-15', nullable: true),
+        new OA\Property(property: 'member_since',       type: 'string',  format: 'date', example: '2010-01-01', nullable: true),
         new OA\Property(property: 'sex_id',             type: 'integer', example: 1),
         new OA\Property(property: 'marital_status_id',  type: 'integer', example: 1),
         new OA\Property(
@@ -100,6 +113,12 @@ class MemberResource extends JsonResource
             'fathers_name'      => $this->fathers_name,
             'mothers_name'      => $this->mothers_name,
             'fax_number'        => $this->fax_number,
+            'national_id'       => $this->national_id,
+            'picture_url'       => $this->picture ? Storage::disk('public')->url($this->picture) : null,
+            'date_birthday'     => $this->date_birthday?->toDateString(),
+            'date_salvation'    => $this->date_salvation?->toDateString(),
+            'date_baptism'      => $this->date_baptism?->toDateString(),
+            'member_since'      => $this->member_since?->toDateString(),
             'sex_id'            => $this->sex_id,
             'marital_status_id' => $this->marital_status_id,
             'occupations'       => OccupationResource::collection($this->whenLoaded('occupations')),
