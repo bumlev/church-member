@@ -4,12 +4,18 @@ namespace App\Services;
 
 use App\Models\Member;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class MemberService
 {
     private const array MEMBER_RELATIONS = [
         'sex', 'educations', 'faculties', 'departments', 'churchResponsibilities', 'talents', 'occupations', 'spiritualGifts',
     ];
+
+    private const string PICTURE_DISK = 'public';
+
+    private const string PICTURE_DIRECTORY = 'members/pictures';
 
     public static function getAllMembers(): Collection
     {
@@ -37,6 +43,8 @@ class MemberService
         unset($data['spiritual_gift']);
         $occupationIds = $data['occupation'] ?? [];
         unset($data['occupation']);
+
+        $data = self::preparePicture($data);
 
         $member = Member::create($data);
         $member->faculties()->sync(self::pivotFromEducationEntries($educationEntries));
@@ -75,6 +83,8 @@ class MemberService
         }
         unset($data['occupation']);
 
+        $data = self::preparePicture($data, $member);
+
         $member->update($data);
         return $member->fresh(self::MEMBER_RELATIONS);
     }
@@ -111,5 +121,28 @@ class MemberService
         }
 
         return $pivotData;
+    }
+
+    /**
+     * Stores a newly uploaded picture on the public disk and replaces the
+     * previous file (if any). When no new file is uploaded, the existing
+     * picture path is left untouched.
+     */
+    private static function preparePicture(array $data, ?Member $member = null): array
+    {
+        if (!($data['picture'] ?? null) instanceof UploadedFile) {
+            unset($data['picture']);
+
+            return $data;
+        }
+
+        if ($member?->picture) {
+            Storage::disk(self::PICTURE_DISK)->delete($member->picture);
+        }
+
+        $data['picture'] = Storage::disk(self::PICTURE_DISK)
+            ->putFile(self::PICTURE_DIRECTORY, $data['picture']);
+
+        return $data;
     }
 }

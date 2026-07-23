@@ -39,37 +39,41 @@ class MemberPaths
     // ── Create a member ──────────────────────────────────────────────────────
     #[OA\Post(
         path: '/members',
-        description: 'Creates a new church member record. Returns the created member.',
+        description: 'Creates a new church member record. Returns the created member. Submitted as multipart/form-data to support the optional picture upload.',
         summary: 'Create a new member',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
                 required: ['first_name', 'last_name', 'talent', 'spiritual_gift', 'sex_id', 'marital_status_id'],
                 properties: [
                     new OA\Property(property: 'first_name',        type: 'string',  example: 'John',          maxLength: 100),
                     new OA\Property(property: 'last_name',         type: 'string',  example: 'Doe',           maxLength: 100),
                     new OA\Property(
                         property: 'talent',
-                        description: 'IDs of talents selected (at least one required)',
+                        description: 'IDs of talents selected (at least one required). Submitted as multipart/form-data: use repeated fields (talent[]=1&talent[]=2), a single JSON-encoded string (e.g. "[1,2]"), a comma-separated string (e.g. "1,2"), or a bare single ID (e.g. talent=1).',
                         type: 'array',
                         items: new OA\Items(type: 'integer'),
-                        example: [1, 2]
+                        example: [1, 2],
+                        minItems: 1
                     ),
                     new OA\Property(
                         property: 'spiritual_gift',
-                        description: 'IDs of spiritual gifts selected (at least one required)',
+                        description: 'IDs of spiritual gifts selected (at least one required). Submitted as multipart/form-data: use repeated fields (spiritual_gift[]=1&spiritual_gift[]=3), a single JSON-encoded string (e.g. "[1,3]"), a comma-separated string (e.g. "1,3"), or a bare single ID (e.g. spiritual_gift=1).',
                         type: 'array',
                         items: new OA\Items(type: 'integer'),
-                        example: [1, 3]
+                        example: [1, 3],
+                        minItems: 1
                     ),
                     new OA\Property(property: 'sex_id',            type: 'integer', example: 1),
                     new OA\Property(property: 'marital_status_id', type: 'integer', example: 1),
-                    new OA\Property(property: 'fathers_name',      type: 'string',  example: 'James Doe',     nullable: true),
-                    new OA\Property(property: 'mothers_name',      type: 'string',  example: 'Mary Doe',      nullable: true),
-                    new OA\Property(property: 'employed',          type: 'boolean', example: true,            nullable: true),
+                    new OA\Property(property: 'fathers_name',      type: 'string',  example: 'James Doe',     nullable: true, maxLength: 150),
+                    new OA\Property(property: 'mothers_name',      type: 'string',  example: 'Mary Doe',      nullable: true, maxLength: 150),
+                    new OA\Property(property: 'employed',          type: 'boolean', example: true,            nullable: true, description: 'Submitted as multipart/form-data as the literal string "true" or "false" (also accepts "1"/"0").'),
                     new OA\Property(
                         property: 'occupation',
-                        description: 'IDs of occupations selected',
+                        description: 'IDs of occupations selected. Submitted as multipart/form-data: use repeated fields (occupation[]=2), a single JSON-encoded string (e.g. "[2]"), a comma-separated string (e.g. "2,4"), or a bare single ID (e.g. occupation=2).',
                         type: 'array',
                         items: new OA\Items(type: 'integer'),
                         example: [2],
@@ -77,47 +81,27 @@ class MemberPaths
                     ),
                     new OA\Property(
                         property: 'education',
-                        description: 'Education levels selected, each paired with its own faculty IDs',
-                        type: 'array',
-                        items: new OA\Items(
-                            properties: [
-                                new OA\Property(property: 'education_id', type: 'integer', example: 3),
-                                new OA\Property(
-                                    property: 'faculty',
-                                    description: 'IDs of faculties (must belong to this entry\'s education_id)',
-                                    type: 'array',
-                                    items: new OA\Items(type: 'integer'),
-                                    example: [4, 5],
-                                    nullable: true
-                                ),
-                            ],
-                            type: 'object'
-                        ),
+                        description: 'Education levels selected, each paired with its own faculty IDs. This is an array of objects, which cannot be expressed as a plain multipart/form-data field — submit it as a single JSON-encoded string, e.g. [{"education_id":3,"faculty":[4,5]}].',
+                        type: 'string',
+                        example: '[{"education_id":3,"faculty":[4,5]}]',
                         nullable: true
                     ),
                     new OA\Property(
                         property: 'department',
-                        description: 'Departments selected, each paired with its own church responsibility IDs',
-                        type: 'array',
-                        items: new OA\Items(
-                            properties: [
-                                new OA\Property(property: 'department_id', type: 'integer', example: 1),
-                                new OA\Property(
-                                    property: 'church_responsibility',
-                                    description: 'IDs of church responsibilities (must belong to this entry\'s department_id)',
-                                    type: 'array',
-                                    items: new OA\Items(type: 'integer'),
-                                    example: [1, 2],
-                                    nullable: true
-                                ),
-                            ],
-                            type: 'object'
-                        ),
+                        description: 'Departments selected, each paired with its own church responsibility IDs. This is an array of objects, which cannot be expressed as a plain multipart/form-data field — submit it as a single JSON-encoded string, e.g. [{"department_id":1,"church_responsibility":[1,2]}].',
+                        type: 'string',
+                        example: '[{"department_id":1,"church_responsibility":[1,2]}]',
                         nullable: true
                     ),
-                    new OA\Property(property: 'mobile_tel',        type: 'string',  example: '+250788000000', nullable: true),
-                    new OA\Property(property: 'email',             type: 'string',  example: 'john@example.com', nullable: true),
-                    new OA\Property(property: 'fax_number',        type: 'string',  example: null,            nullable: true),
+                    new OA\Property(property: 'mobile_tel',        type: 'string',  example: '+250788000000', nullable: true, maxLength: 20),
+                    new OA\Property(property: 'email',             type: 'string',  format: 'email', example: 'john@example.com', nullable: true, maxLength: 150),
+                    new OA\Property(property: 'fax_number',        type: 'string',  example: null,            nullable: true, maxLength: 20),
+                    new OA\Property(property: 'national_id',       type: 'string',  example: '1199080012345678', nullable: true, maxLength: 20),
+                    new OA\Property(property: 'picture',           type: 'string',  format: 'binary', description: 'Image file (jpeg, jpg, png, webp), max 2MB', nullable: true),
+                    new OA\Property(property: 'date_birthday',     type: 'string',  format: 'date', example: '1990-05-12', description: 'Format: yyyy-mm-dd', nullable: true),
+                    new OA\Property(property: 'date_salvation',    type: 'string',  format: 'date', example: '2005-03-20', description: 'Format: yyyy-mm-dd', nullable: true),
+                    new OA\Property(property: 'date_baptism',      type: 'string',  format: 'date', example: '2005-06-15', description: 'Format: yyyy-mm-dd', nullable: true),
+                    new OA\Property(property: 'member_since',      type: 'string',  format: 'date', example: '2010-01-01', description: 'Format: yyyy-mm-dd', nullable: true),
                     new OA\Property(property: 'province_id',       type: 'integer', example: 1,               nullable: true),
                     new OA\Property(property: 'district_id',       type: 'integer', example: 1,               nullable: true),
                     new OA\Property(property: 'sector_id',         type: 'integer', example: 1,               nullable: true),
@@ -125,6 +109,7 @@ class MemberPaths
                     new OA\Property(property: 'cell_id',           type: 'integer', example: 1,               nullable: true),
                     new OA\Property(property: 'village_id',        type: 'integer', example: 1,               nullable: true),
                 ]
+                )
             )
         ),
         tags: ['Members'],
@@ -204,38 +189,42 @@ class MemberPaths
     // ── Update a member ──────────────────────────────────────────────────────
     #[OA\Put(
         path: '/members/{id}',
-        description: 'Updates a church member record. All fields are optional (PATCH behaviour). Returns the updated member.',
+        description: 'Updates a church member record. All fields are optional (PATCH behaviour). Returns the updated member. Passing a new `picture` replaces and deletes the previous one; omitting it leaves the current picture untouched. Submitted as multipart/form-data to support the picture upload — since PHP does not parse multipart bodies on PUT requests, send this as a POST with a `_method=PUT` field (Laravel\'s standard method-spoofing).',
         summary: 'Update an existing member',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
                 properties: [
                     new OA\Property(property: 'first_name', type: 'string', example: 'John', nullable: true, maxLength: 100),
                     new OA\Property(property: 'last_name', type: 'string', example: 'Doe', nullable: true, maxLength: 100),
                     new OA\Property(
                         property: 'talent',
-                        description: 'IDs of talents selected (at least one required if provided)',
+                        description: 'IDs of talents selected (at least one required if provided). Submitted as multipart/form-data: use repeated fields (talent[]=1&talent[]=2), a single JSON-encoded string (e.g. "[1,2]"), a comma-separated string (e.g. "1,2"), or a bare single ID (e.g. talent=1).',
                         type: 'array',
                         items: new OA\Items(type: 'integer'),
                         example: [1, 2],
-                        nullable: true
+                        nullable: true,
+                        minItems: 1
                     ),
                     new OA\Property(
                         property: 'spiritual_gift',
-                        description: 'IDs of spiritual gifts selected (at least one required if provided)',
+                        description: 'IDs of spiritual gifts selected (at least one required if provided). Submitted as multipart/form-data: use repeated fields (spiritual_gift[]=1&spiritual_gift[]=3), a single JSON-encoded string (e.g. "[1,3]"), a comma-separated string (e.g. "1,3"), or a bare single ID (e.g. spiritual_gift=1).',
                         type: 'array',
                         items: new OA\Items(type: 'integer'),
                         example: [1, 3],
-                        nullable: true
+                        nullable: true,
+                        minItems: 1
                     ),
                     new OA\Property(property: 'sex_id',            type: 'integer', example: 1,                  nullable: true),
                     new OA\Property(property: 'marital_status_id', type: 'integer', example: 1,                  nullable: true),
-                    new OA\Property(property: 'fathers_name',      type: 'string',  example: 'James Doe',        nullable: true),
-                    new OA\Property(property: 'mothers_name',      type: 'string',  example: 'Mary Doe',         nullable: true),
-                    new OA\Property(property: 'employed',          type: 'boolean', example: true,               nullable: true),
+                    new OA\Property(property: 'fathers_name',      type: 'string',  example: 'James Doe',        nullable: true, maxLength: 150),
+                    new OA\Property(property: 'mothers_name',      type: 'string',  example: 'Mary Doe',         nullable: true, maxLength: 150),
+                    new OA\Property(property: 'employed',          type: 'boolean', example: true,               nullable: true, description: 'Submitted as multipart/form-data as the literal string "true" or "false" (also accepts "1"/"0").'),
                     new OA\Property(
                         property: 'occupation',
-                        description: 'IDs of occupations selected',
+                        description: 'IDs of occupations selected. Submitted as multipart/form-data: use repeated fields (occupation[]=2), a single JSON-encoded string (e.g. "[2]"), a comma-separated string (e.g. "2,4"), or a bare single ID (e.g. occupation=2).',
                         type: 'array',
                         items: new OA\Items(type: 'integer'),
                         example: [2],
@@ -243,47 +232,27 @@ class MemberPaths
                     ),
                     new OA\Property(
                         property: 'education',
-                        description: 'Education levels selected, each paired with its own faculty IDs',
-                        type: 'array',
-                        items: new OA\Items(
-                            properties: [
-                                new OA\Property(property: 'education_id', type: 'integer', example: 3),
-                                new OA\Property(
-                                    property: 'faculty',
-                                    description: 'IDs of faculties (must belong to this entry\'s education_id)',
-                                    type: 'array',
-                                    items: new OA\Items(type: 'integer'),
-                                    example: [4, 5],
-                                    nullable: true
-                                ),
-                            ],
-                            type: 'object'
-                        ),
+                        description: 'Education levels selected, each paired with its own faculty IDs. This is an array of objects, which cannot be expressed as a plain multipart/form-data field — submit it as a single JSON-encoded string, e.g. [{"education_id":3,"faculty":[4,5]}].',
+                        type: 'string',
+                        example: '[{"education_id":3,"faculty":[4,5]}]',
                         nullable: true
                     ),
                     new OA\Property(
                         property: 'department',
-                        description: 'Departments selected, each paired with its own church responsibility IDs',
-                        type: 'array',
-                        items: new OA\Items(
-                            properties: [
-                                new OA\Property(property: 'department_id', type: 'integer', example: 1),
-                                new OA\Property(
-                                    property: 'church_responsibility',
-                                    description: 'IDs of church responsibilities (must belong to this entry\'s department_id)',
-                                    type: 'array',
-                                    items: new OA\Items(type: 'integer'),
-                                    example: [1, 2],
-                                    nullable: true
-                                ),
-                            ],
-                            type: 'object'
-                        ),
+                        description: 'Departments selected, each paired with its own church responsibility IDs. This is an array of objects, which cannot be expressed as a plain multipart/form-data field — submit it as a single JSON-encoded string, e.g. [{"department_id":1,"church_responsibility":[1,2]}].',
+                        type: 'string',
+                        example: '[{"department_id":1,"church_responsibility":[1,2]}]',
                         nullable: true
                     ),
-                    new OA\Property(property: 'mobile_tel',        type: 'string',  example: '+250788000000',    nullable: true),
-                    new OA\Property(property: 'email',             type: 'string',  example: 'john@example.com', nullable: true),
-                    new OA\Property(property: 'fax_number',        type: 'string',  example: null,               nullable: true),
+                    new OA\Property(property: 'mobile_tel',        type: 'string',  example: '+250788000000',    nullable: true, maxLength: 20),
+                    new OA\Property(property: 'email',             type: 'string',  format: 'email', example: 'john@example.com', nullable: true, maxLength: 150),
+                    new OA\Property(property: 'fax_number',        type: 'string',  example: null,               nullable: true, maxLength: 20),
+                    new OA\Property(property: 'national_id',       type: 'string',  example: '1199080012345678', nullable: true, maxLength: 20),
+                    new OA\Property(property: 'picture',           type: 'string',  format: 'binary', description: 'Image file (jpeg, jpg, png, webp), max 2MB', nullable: true),
+                    new OA\Property(property: 'date_birthday',     type: 'string',  format: 'date', example: '1990-05-12', description: 'Format: yyyy-mm-dd', nullable: true),
+                    new OA\Property(property: 'date_salvation',    type: 'string',  format: 'date', example: '2005-03-20', description: 'Format: yyyy-mm-dd', nullable: true),
+                    new OA\Property(property: 'date_baptism',      type: 'string',  format: 'date', example: '2005-06-15', description: 'Format: yyyy-mm-dd', nullable: true),
+                    new OA\Property(property: 'member_since',      type: 'string',  format: 'date', example: '2010-01-01', description: 'Format: yyyy-mm-dd', nullable: true),
                     new OA\Property(property: 'province_id',       type: 'integer', example: 1,                  nullable: true),
                     new OA\Property(property: 'district_id',       type: 'integer', example: 1,                  nullable: true),
                     new OA\Property(property: 'sector_id',         type: 'integer', example: 1,                  nullable: true),
@@ -291,6 +260,7 @@ class MemberPaths
                     new OA\Property(property: 'cell_id',           type: 'integer', example: 1,                  nullable: true),
                     new OA\Property(property: 'village_id',        type: 'integer', example: 1,                  nullable: true),
                 ]
+                )
             )
         ),
         tags: ['Members'],
