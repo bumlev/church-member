@@ -17,6 +17,7 @@ use App\Services\DepartmentService;
 use App\Services\EducationService;
 use App\Http\Resources\TalentResource;
 use App\Services\FacultyService;
+use App\Http\Requests\FilterMemberRequest;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
 use App\Models\Member;
@@ -41,10 +42,10 @@ class MemberController extends Controller
     ) {}
 
 
-    public function index(): JsonResponse
+    public function index(FilterMemberRequest $request): JsonResponse
     {
         return MemberResource::collection(
-            $this->memberService->getAllMembers()
+            $this->memberService->filterMembers($request->validated())
         )->response()->setStatusCode(ResponseAlias::HTTP_OK);
     }
 

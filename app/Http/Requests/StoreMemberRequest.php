@@ -108,6 +108,7 @@ class StoreMemberRequest extends FormRequest
             'spiritual_gift.*'  => ['integer', 'distinct', 'exists:spiritual_gift,id'],
             'sex_id'            => ['required', 'integer', 'exists:sex,id'],
             'marital_status_id' => ['required', 'integer', 'exists:marital_status,id'],
+            'date_birthday'     => ['required', 'date_format:Y-m-d'],
 
             // ── Optional personal fields ───────────────────────────────────────
             'fathers_name'      => ['nullable', 'string', 'max:150'],
@@ -117,7 +118,6 @@ class StoreMemberRequest extends FormRequest
             'picture'           => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
 
             // ── Optional dates ─────────────────────────────────────────────────
-            'date_birthday'     => ['nullable', 'date_format:Y-m-d'],
             'date_salvation'    => ['nullable', 'date_format:Y-m-d'],
             'date_baptism'      => ['nullable', 'date_format:Y-m-d'],
             'member_since'      => ['nullable', 'date_format:Y-m-d'],
@@ -135,7 +135,6 @@ class StoreMemberRequest extends FormRequest
             // ── Contact ────────────────────────────────────────────────────────
             'mobile_tel'        => ['nullable', 'string', 'max:20'],
             'email'             => ['nullable', 'email', 'max:150'],
-            'fax_number'        => ['nullable', 'string', 'max:20'],
 
             // ── Geographic FKs ─────────────────────────────────────────────────
             'province_id'       => ['nullable', 'integer', 'exists:province,id'],

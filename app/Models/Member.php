@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property mixed $id
  * @property mixed $national_id
  * @property mixed $picture
+ * @property-read int|null $age
  */
 class Member extends Model
 {
@@ -31,7 +33,6 @@ class Member extends Model
         'employed',
         'mobile_tel',
         'email',
-        'fax_number',
         'national_id',
         'picture',
         'date_birthday',
@@ -53,6 +54,17 @@ class Member extends Model
         'date_baptism'   => 'date',
         'member_since'   => 'date',
     ];
+
+    protected $appends = [
+        'age',
+    ];
+
+    protected function age(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->date_birthday ? (int) $this->date_birthday->diffInYears(now()) : null,
+        );
+    }
 
     // ── Lookup relationships ────────────────────────────────────────────────
 
