@@ -15,9 +15,146 @@ class MemberPaths
     #[OA\PathItem(path: '/members')]
     #[OA\Get(
         path: '/members',
-        description: 'Returns a collection of all church members ordered by last name then first name.',
-        summary: 'List all members',
+        description: 'Returns a collection of church members ordered by last name then first name, optionally narrowed down by any combination of the filter query parameters below. Omitting all filters returns every member.',
+        summary: 'List / filter members',
         tags: ['Members'],
+        parameters: [
+            new OA\Parameter(name: 'first_name', description: 'Partial match on first name.', in: 'query', required: false, schema: new OA\Schema(type: 'string', example: 'John')),
+            new OA\Parameter(name: 'last_name', description: 'Partial match on last name.', in: 'query', required: false, schema: new OA\Schema(type: 'string', example: 'Doe')),
+            new OA\Parameter(name: 'fathers_name', description: 'Partial match on father\'s name.', in: 'query', required: false, schema: new OA\Schema(type: 'string', example: 'James')),
+            new OA\Parameter(name: 'mothers_name', description: 'Partial match on mother\'s name.', in: 'query', required: false, schema: new OA\Schema(type: 'string', example: 'Mary')),
+            new OA\Parameter(name: 'national_id', description: 'Exact match on national ID.', in: 'query', required: false, schema: new OA\Schema(type: 'string', example: '1199080012345678')),
+            new OA\Parameter(
+                name: 'sex_id',
+                description: 'One or more sex IDs. Repeat the param (sex_id[]=1&sex_id[]=2), send a comma-separated list ("1,2"), or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [1])
+            ),
+            new OA\Parameter(
+                name: 'marital_status_id',
+                description: 'One or more marital status IDs. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [1])
+            ),
+            new OA\Parameter(name: 'age_min', description: 'Minimum age (inclusive), derived from date_birthday.', in: 'query', required: false, schema: new OA\Schema(type: 'integer', example: 18)),
+            new OA\Parameter(name: 'age_max', description: 'Maximum age (inclusive), derived from date_birthday.', in: 'query', required: false, schema: new OA\Schema(type: 'integer', example: 35)),
+            new OA\Parameter(name: 'date_birthday_from', description: 'Format: yyyy-mm-dd.', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date', example: '1990-01-01')),
+            new OA\Parameter(name: 'date_birthday_to', description: 'Format: yyyy-mm-dd.', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date', example: '2000-12-31')),
+            new OA\Parameter(name: 'date_salvation_from', description: 'Format: yyyy-mm-dd.', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date', example: '2000-01-01')),
+            new OA\Parameter(name: 'date_salvation_to', description: 'Format: yyyy-mm-dd.', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date', example: '2020-12-31')),
+            new OA\Parameter(name: 'date_baptism_from', description: 'Format: yyyy-mm-dd.', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date', example: '2000-01-01')),
+            new OA\Parameter(name: 'date_baptism_to', description: 'Format: yyyy-mm-dd.', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date', example: '2020-12-31')),
+            new OA\Parameter(name: 'member_since_from', description: 'Format: yyyy-mm-dd.', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date', example: '2010-01-01')),
+            new OA\Parameter(name: 'member_since_to', description: 'Format: yyyy-mm-dd.', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date', example: '2020-12-31')),
+            new OA\Parameter(name: 'employed', description: 'Exact match. Accepts "true"/"false" (also "1"/"0").', in: 'query', required: false, schema: new OA\Schema(type: 'boolean', example: true)),
+            new OA\Parameter(
+                name: 'province_id',
+                description: 'One or more province IDs. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [1])
+            ),
+            new OA\Parameter(
+                name: 'district_id',
+                description: 'One or more district IDs. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [1])
+            ),
+            new OA\Parameter(
+                name: 'sector_id',
+                description: 'One or more sector IDs. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [1])
+            ),
+            new OA\Parameter(
+                name: 'cellule_id',
+                description: 'One or more cellule IDs. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [1])
+            ),
+            new OA\Parameter(
+                name: 'cell_id',
+                description: 'One or more cell IDs. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [1])
+            ),
+            new OA\Parameter(
+                name: 'village_id',
+                description: 'One or more village IDs. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [1])
+            ),
+            new OA\Parameter(
+                name: 'occupation_id',
+                description: 'Member has any of these occupations. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [2])
+            ),
+            new OA\Parameter(
+                name: 'talent_id',
+                description: 'Member has any of these talents. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [4, 7])
+            ),
+            new OA\Parameter(
+                name: 'spiritual_gift_id',
+                description: 'Member has any of these spiritual gifts. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [1, 3])
+            ),
+            new OA\Parameter(
+                name: 'education_id',
+                description: 'Member has any of these education levels. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [3])
+            ),
+            new OA\Parameter(
+                name: 'faculty_id',
+                description: 'Member has any of these faculties. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [4, 5])
+            ),
+            new OA\Parameter(
+                name: 'department_id',
+                description: 'Member belongs to any of these departments. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [2])
+            ),
+            new OA\Parameter(
+                name: 'church_responsibility_id',
+                description: 'Member has any of these church responsibilities. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [5])
+            ),
+            new OA\Parameter(
+                name: 'family_id',
+                description: 'Member belongs to any of these families. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [10])
+            ),
+            new OA\Parameter(
+                name: 'family_role_type',
+                description: 'Member holds this role within a family membership. One of: father, mother, child, guardian.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', enum: ['father', 'mother', 'child', 'guardian'], example: 'child')
+            ),
+        ],
         responses: [
             new OA\Response(
                 response: 200,
@@ -28,6 +165,20 @@ class MemberPaths
                             property: 'data',
                             type: 'array',
                             items: new OA\Items(ref: '#/components/schemas/MemberResource')
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error in one or more filter parameters',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'Selected sex is invalid.'),
+                        new OA\Property(
+                            property: 'errors',
+                            type: 'object',
+                            example: ['sex_id.0' => ['Selected sex is invalid.']]
                         ),
                     ]
                 )
@@ -46,7 +197,7 @@ class MemberPaths
             content: new OA\MediaType(
                 mediaType: 'multipart/form-data',
                 schema: new OA\Schema(
-                required: ['first_name', 'last_name', 'talent', 'spiritual_gift', 'sex_id', 'marital_status_id'],
+                required: ['first_name', 'last_name', 'talent', 'spiritual_gift', 'sex_id', 'marital_status_id', 'date_birthday'],
                 properties: [
                     new OA\Property(property: 'first_name',        type: 'string',  example: 'John',          maxLength: 100),
                     new OA\Property(property: 'last_name',         type: 'string',  example: 'Doe',           maxLength: 100),
@@ -95,10 +246,9 @@ class MemberPaths
                     ),
                     new OA\Property(property: 'mobile_tel',        type: 'string',  example: '+250788000000', nullable: true, maxLength: 20),
                     new OA\Property(property: 'email',             type: 'string',  format: 'email', example: 'john@example.com', nullable: true, maxLength: 150),
-                    new OA\Property(property: 'fax_number',        type: 'string',  example: null,            nullable: true, maxLength: 20),
                     new OA\Property(property: 'national_id',       type: 'string',  example: '1199080012345678', nullable: true, maxLength: 20),
                     new OA\Property(property: 'picture',           type: 'string',  format: 'binary', description: 'Image file (jpeg, jpg, png, webp), max 2MB', nullable: true),
-                    new OA\Property(property: 'date_birthday',     type: 'string',  format: 'date', example: '1990-05-12', description: 'Format: yyyy-mm-dd', nullable: true),
+                    new OA\Property(property: 'date_birthday',     type: 'string',  format: 'date', example: '1990-05-12', description: 'Format: yyyy-mm-dd'),
                     new OA\Property(property: 'date_salvation',    type: 'string',  format: 'date', example: '2005-03-20', description: 'Format: yyyy-mm-dd', nullable: true),
                     new OA\Property(property: 'date_baptism',      type: 'string',  format: 'date', example: '2005-06-15', description: 'Format: yyyy-mm-dd', nullable: true),
                     new OA\Property(property: 'member_since',      type: 'string',  format: 'date', example: '2010-01-01', description: 'Format: yyyy-mm-dd', nullable: true),
@@ -246,7 +396,6 @@ class MemberPaths
                     ),
                     new OA\Property(property: 'mobile_tel',        type: 'string',  example: '+250788000000',    nullable: true, maxLength: 20),
                     new OA\Property(property: 'email',             type: 'string',  format: 'email', example: 'john@example.com', nullable: true, maxLength: 150),
-                    new OA\Property(property: 'fax_number',        type: 'string',  example: null,               nullable: true, maxLength: 20),
                     new OA\Property(property: 'national_id',       type: 'string',  example: '1199080012345678', nullable: true, maxLength: 20),
                     new OA\Property(property: 'picture',           type: 'string',  format: 'binary', description: 'Image file (jpeg, jpg, png, webp), max 2MB', nullable: true),
                     new OA\Property(property: 'date_birthday',     type: 'string',  format: 'date', example: '1990-05-12', description: 'Format: yyyy-mm-dd', nullable: true),
