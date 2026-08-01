@@ -29,7 +29,8 @@ class DatabaseSeeder extends Seeder
             FacultySeeder::class,
             TalentSeeder::class,
             SpiritualGiftSeeder::class,
-            CellSeeder::class
+            CellSeeder::class,
+            AdminSeeder::class,
         ]);
     }
 }

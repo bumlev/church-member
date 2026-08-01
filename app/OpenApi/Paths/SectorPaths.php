@@ -14,6 +14,7 @@ use OpenApi\Attributes as OA;
     path: '/{district}/sectors',
     description: 'Returns all sectors belonging to the specified district, ordered alphabetically.',
     summary: 'List sectors by district',
+    security: [['sanctum' => []]],
     tags: ['Sectors'],
     parameters: [
         new OA\Parameter(
@@ -38,6 +39,7 @@ use OpenApi\Attributes as OA;
                 ]
             )
         ),
+        new OA\Response(response: 401, description: 'Unauthenticated'),
         new OA\Response(response: 404, description: 'District not found'),
     ]
 )]

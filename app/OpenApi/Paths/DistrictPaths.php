@@ -14,6 +14,7 @@ use OpenApi\Attributes as OA;
     path: '/{province}/districts',
     description: 'Returns all districts belonging to the specified province, ordered alphabetically.',
     summary: 'List districts by province',
+    security: [['sanctum' => []]],
     tags: ['Districts'],
     parameters: [
         new OA\Parameter(
@@ -38,6 +39,7 @@ use OpenApi\Attributes as OA;
                 ]
             )
         ),
+        new OA\Response(response: 401, description: 'Unauthenticated'),
         new OA\Response(response: 404, description: 'Province not found'),
     ]
 )]

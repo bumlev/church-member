@@ -14,6 +14,7 @@ use OpenApi\Attributes as OA;
     path: '/provinces',
     description: 'Returns a collection of all provinces ordered alphabetically.',
     summary: 'List all provinces',
+    security: [['sanctum' => []]],
     tags: ['Provinces'],
     responses: [
         new OA\Response(
@@ -29,6 +30,7 @@ use OpenApi\Attributes as OA;
                 ]
             )
         ),
+        new OA\Response(response: 401, description: 'Unauthenticated'),
     ]
 )]
 class ProvincePaths {}
