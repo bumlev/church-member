@@ -14,6 +14,7 @@ use OpenApi\Attributes as OA;
     path: '/{cellule}/villages',
     description: 'Returns all villages belonging to the specified cellule, ordered alphabetically.',
     summary: 'List villages by cellule',
+    security: [['sanctum' => []]],
     tags: ['Villages'],
     parameters: [
         new OA\Parameter(
@@ -38,6 +39,7 @@ use OpenApi\Attributes as OA;
                 ]
             )
         ),
+        new OA\Response(response: 401, description: 'Unauthenticated'),
         new OA\Response(response: 404, description: 'Cellule not found'),
     ]
 )]

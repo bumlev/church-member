@@ -17,8 +17,10 @@ class FamilyPaths
         path: '/families',
         description: 'Returns a collection of all families ordered by family name, together with their members.',
         summary: 'List all families',
+        security: [['sanctum' => []]],
         tags: ['Families'],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
                 description: 'A list of families',
@@ -67,8 +69,10 @@ class FamilyPaths
                 ]
             )
         ),
+        security: [['sanctum' => []]],
         tags: ['Families'],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 201,
                 description: 'Family created successfully',
@@ -102,6 +106,7 @@ class FamilyPaths
         path: '/families/{id}',
         description: 'Returns the details of a specific family by its ID, including its members and their roles.',
         summary: 'Get a single family',
+        security: [['sanctum' => []]],
         tags: ['Families'],
         parameters: [
             new OA\Parameter(
@@ -113,6 +118,7 @@ class FamilyPaths
             ),
         ],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
                 description: 'Family found',
@@ -165,6 +171,7 @@ class FamilyPaths
                 ]
             )
         ),
+        security: [['sanctum' => []]],
         tags: ['Families'],
         parameters: [
             new OA\Parameter(
@@ -176,6 +183,7 @@ class FamilyPaths
             ),
         ],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
                 description: 'Family updated successfully',
@@ -217,6 +225,7 @@ class FamilyPaths
         path: '/families/{id}',
         description: 'Deletes a family record. Membership rows for this family are removed via cascading delete.',
         summary: 'Delete a family',
+        security: [['sanctum' => []]],
         tags: ['Families'],
         parameters: [
             new OA\Parameter(
@@ -228,6 +237,7 @@ class FamilyPaths
             ),
         ],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(response: 204, description: 'Family deleted successfully'),
             new OA\Response(
                 response: 404,
@@ -260,6 +270,7 @@ class FamilyPaths
                 ]
             )
         ),
+        security: [['sanctum' => []]],
         tags: ['Families'],
         parameters: [
             new OA\Parameter(
@@ -271,6 +282,7 @@ class FamilyPaths
             ),
         ],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 201,
                 description: 'Member added to the family',
@@ -304,6 +316,7 @@ class FamilyPaths
         path: '/families/{family}/members/{member}',
         description: 'Removes all role assignments a member holds within the given family.',
         summary: 'Remove a member from a family',
+        security: [['sanctum' => []]],
         tags: ['Families'],
         parameters: [
             new OA\Parameter(
@@ -322,6 +335,7 @@ class FamilyPaths
             ),
         ],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(response: 204, description: 'Member removed from the family'),
         ]
     )]

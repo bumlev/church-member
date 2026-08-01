@@ -14,6 +14,7 @@ use OpenApi\Attributes as OA;
     path: '/{sector}/cellules',
     description: 'Returns all cellules belonging to the specified sector, ordered alphabetically.',
     summary: 'List cellules by sector',
+    security: [['sanctum' => []]],
     tags: ['Cellules'],
     parameters: [
         new OA\Parameter(
@@ -38,6 +39,7 @@ use OpenApi\Attributes as OA;
                 ]
             )
         ),
+        new OA\Response(response: 401, description: 'Unauthenticated'),
         new OA\Response(response: 404, description: 'Sector not found'),
     ]
 )]

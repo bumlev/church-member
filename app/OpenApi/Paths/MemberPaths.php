@@ -17,6 +17,7 @@ class MemberPaths
         path: '/members',
         description: 'Returns a collection of church members ordered by last name then first name, optionally narrowed down by any combination of the filter query parameters below. Omitting all filters returns every member.',
         summary: 'List / filter members',
+        security: [['sanctum' => []]],
         tags: ['Members'],
         parameters: [
             new OA\Parameter(name: 'first_name', description: 'Partial match on first name.', in: 'query', required: false, schema: new OA\Schema(type: 'string', example: 'John')),
@@ -156,6 +157,7 @@ class MemberPaths
             ),
         ],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
                 description: 'A list of church members',
@@ -262,8 +264,10 @@ class MemberPaths
                 )
             )
         ),
+        security: [['sanctum' => []]],
         tags: ['Members'],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 201,
                 description: 'Member created successfully',
@@ -300,6 +304,7 @@ class MemberPaths
         path: '/members/{id}',
         description: 'Returns the details of a specific church member by their ID.',
         summary: 'Get a single member',
+        security: [['sanctum' => []]],
         tags: ['Members'],
         parameters: [
             new OA\Parameter(
@@ -311,6 +316,7 @@ class MemberPaths
             ),
         ],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
                 description: 'Member found',
@@ -412,6 +418,7 @@ class MemberPaths
                 )
             )
         ),
+        security: [['sanctum' => []]],
         tags: ['Members'],
         parameters: [
             new OA\Parameter(
@@ -423,6 +430,7 @@ class MemberPaths
             ),
         ],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
                 description: 'Member updated successfully',
@@ -468,8 +476,10 @@ class MemberPaths
         path: '/members/occupations',
         description: 'Returns all occupations ordered alphabetically. Use this to populate the occupation multi-select on the member registration form.',
         summary: 'List all occupations',
+        security: [['sanctum' => []]],
         tags: ['Member Form Data'],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
                 description: 'A list of occupations',
@@ -493,8 +503,10 @@ class MemberPaths
         path: '/members/talents',
         description: 'Returns all talents ordered alphabetically. Use this to populate the talent multi-select on the member registration form.',
         summary: 'List all talents',
+        security: [['sanctum' => []]],
         tags: ['Member Form Data'],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
                 description: 'A list of talents',
@@ -518,8 +530,10 @@ class MemberPaths
         path: '/members/spiritual-gifts',
         description: 'Returns all spiritual gifts ordered alphabetically. Use this to populate the spiritual gift multi-select on the member registration form.',
         summary: 'List all spiritual gifts',
+        security: [['sanctum' => []]],
         tags: ['Member Form Data'],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
                 description: 'A list of spiritual gifts',
@@ -543,8 +557,10 @@ class MemberPaths
         path: '/members/educations',
         description: 'Returns all education levels ordered alphabetically. Use this to populate the education dropdown on the member registration form.',
         summary: 'List all education levels',
+        security: [['sanctum' => []]],
         tags: ['Member Form Data'],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
                 description: 'A list of education levels',
@@ -568,6 +584,7 @@ class MemberPaths
         path: '/members/educations/{education}/faculties',
         description: 'Returns all faculties available for the given education level, ordered alphabetically. Use this to populate the faculty multi-select on the member registration form once an education level is chosen.',
         summary: 'List faculties for an education level',
+        security: [['sanctum' => []]],
         tags: ['Member Form Data'],
         parameters: [
             new OA\Parameter(
@@ -579,6 +596,7 @@ class MemberPaths
             ),
         ],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
                 description: 'A list of faculties for the given education level',
@@ -611,6 +629,7 @@ class MemberPaths
         path: '/members/departments/{department}/church-responsibilities',
         description: 'Returns all church responsibilities available for the given department, ordered alphabetically. Use this to populate the church responsibility multi-select on the member registration form once a department is chosen.',
         summary: 'List church responsibilities for a department',
+        security: [['sanctum' => []]],
         tags: ['Member Form Data'],
         parameters: [
             new OA\Parameter(
@@ -622,6 +641,7 @@ class MemberPaths
             ),
         ],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
                 description: 'A list of church responsibilities for the given department',
@@ -654,8 +674,10 @@ class MemberPaths
         path: '/members/departments',
         description: 'Returns all departments ordered alphabetically. Use this to populate the department dropdown on the member registration form.',
         summary: 'List all departments',
+        security: [['sanctum' => []]],
         tags: ['Member Form Data'],
         responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
                 description: 'A list of departments',

@@ -17,6 +17,13 @@ use OpenApi\Attributes as OA;
     url: '/api/v1',
     description: 'API v1'
 )]
+#[OA\SecurityScheme(
+    securityScheme: 'sanctum',
+    type: 'http',
+    scheme: 'bearer',
+    description: 'Laravel Sanctum personal access token. Send as `Authorization: Bearer {token}`.'
+)]
+#[OA\Tag(name: 'Authentication',   description: 'Login, logout, and password reset endpoints')]
 #[OA\Tag(name: 'Provinces',        description: 'Operations related to provinces')]
 #[OA\Tag(name: 'Districts',        description: 'Operations related to districts')]
 #[OA\Tag(name: 'Sectors',          description: 'Operations related to sectors')]
@@ -25,6 +32,7 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: 'Members',          description: 'Operations related to church members')]
 #[OA\Tag(name: 'Member Form Data', description: 'Lookup lists used to populate member registration form dropdowns')]
 #[OA\Tag(name: 'Families',         description: 'Operations related to families and the members that belong to them')]
+#[OA\Tag(name: 'Admin: Users',     description: 'Admin-only user account management. Requires an authenticated admin user.')]
 class ApiInfo {}
 
 

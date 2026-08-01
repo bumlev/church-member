@@ -16,6 +16,245 @@
         }
     ],
     "paths": {
+        "/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Log in",
+                "description": "Authenticates a user with their email and password and returns a bearer token to use for subsequent authenticated requests.",
+                "operationId": "ef2497651f5b870ac573479c3605e366",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jane.doe@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|aB3xR9pQmZ..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid credentials or validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The provided credentials are incorrect."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "The provided credentials are incorrect."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many login attempts"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Log out",
+                "description": "Revokes the bearer token used to authenticate the current request.",
+                "operationId": "2344782f4f6c3ff16eecb5f5a5cf5458",
+                "responses": {
+                    "204": {
+                        "description": "Logout successful"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/password/forgot": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Request a password reset",
+                "description": "Sends a password reset token by email if an account exists for the given address. Always responds with a generic message so callers can't use it to discover which emails are registered.",
+                "operationId": "d91242831c1103a6198ec61772e7074d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jane.doe@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Request processed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "If an account with that email exists, a password reset link has been sent."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many reset attempts"
+                    }
+                }
+            }
+        },
+        "/password/reset": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Reset a password",
+                "description": "Resets a user's password using the token they received by email. Revokes all of the user's existing bearer tokens.",
+                "operationId": "b2c8f1b6a1d5e3cdbfbd92e77545ccf1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "9d8e2f..."
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jane.doe@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newSecret123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newSecret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Your password has been reset successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid/expired token, unknown user, or validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This password reset token is invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/{sector}/cellules": {
             "get": {
                 "tags": [
@@ -55,10 +294,18 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "404": {
                         "description": "Sector not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/{province}/districts": {
@@ -100,10 +347,18 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "404": {
                         "description": "Province not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/families": {
@@ -115,6 +370,9 @@
                 "description": "Returns a collection of all families ordered by family name, together with their members.",
                 "operationId": "9339b67ed066a0fea0508296102039ef",
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "200": {
                         "description": "A list of families",
                         "content": {
@@ -133,7 +391,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -211,6 +474,9 @@
                     }
                 },
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "201": {
                         "description": "Family created successfully",
                         "content": {
@@ -250,7 +516,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/families/{id}": {
@@ -274,6 +545,9 @@
                     }
                 ],
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "200": {
                         "description": "Family found",
                         "content": {
@@ -305,7 +579,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -393,6 +672,9 @@
                     }
                 },
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "200": {
                         "description": "Family updated successfully",
                         "content": {
@@ -448,7 +730,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -470,6 +757,9 @@
                     }
                 ],
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "204": {
                         "description": "Family deleted successfully"
                     },
@@ -489,7 +779,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/families/{family}/members": {
@@ -555,6 +850,9 @@
                     }
                 },
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "201": {
                         "description": "Member added to the family",
                         "content": {
@@ -594,7 +892,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/families/{family}/members/{member}": {
@@ -628,10 +931,18 @@
                     }
                 ],
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "204": {
                         "description": "Member removed from the family"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/members": {
@@ -1072,6 +1383,9 @@
                     }
                 ],
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "200": {
                         "description": "A list of church members",
                         "content": {
@@ -1114,7 +1428,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -1310,6 +1629,9 @@
                     }
                 },
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "201": {
                         "description": "Member created successfully",
                         "content": {
@@ -1349,7 +1671,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/members/{id}": {
@@ -1373,6 +1700,9 @@
                     }
                 ],
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "200": {
                         "description": "Member found",
                         "content": {
@@ -1404,7 +1734,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -1610,6 +1945,9 @@
                     }
                 },
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "200": {
                         "description": "Member updated successfully",
                         "content": {
@@ -1665,7 +2003,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/members/occupations": {
@@ -1677,6 +2020,9 @@
                 "description": "Returns all occupations ordered alphabetically. Use this to populate the occupation multi-select on the member registration form.",
                 "operationId": "770af66c7f893c4e484f013d68498f8c",
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "200": {
                         "description": "A list of occupations",
                         "content": {
@@ -1695,7 +2041,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/members/talents": {
@@ -1707,6 +2058,9 @@
                 "description": "Returns all talents ordered alphabetically. Use this to populate the talent multi-select on the member registration form.",
                 "operationId": "0936ce2b401151ff1a84664f6396cb8b",
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "200": {
                         "description": "A list of talents",
                         "content": {
@@ -1725,7 +2079,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/members/spiritual-gifts": {
@@ -1737,6 +2096,9 @@
                 "description": "Returns all spiritual gifts ordered alphabetically. Use this to populate the spiritual gift multi-select on the member registration form.",
                 "operationId": "909afa913a125c74ff9d42d346eb0260",
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "200": {
                         "description": "A list of spiritual gifts",
                         "content": {
@@ -1755,7 +2117,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/members/educations": {
@@ -1767,6 +2134,9 @@
                 "description": "Returns all education levels ordered alphabetically. Use this to populate the education dropdown on the member registration form.",
                 "operationId": "e03210adbadc79a69ddf9c886d38bee0",
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "200": {
                         "description": "A list of education levels",
                         "content": {
@@ -1785,7 +2155,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/members/educations/{education}/faculties": {
@@ -1809,6 +2184,9 @@
                     }
                 ],
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "200": {
                         "description": "A list of faculties for the given education level",
                         "content": {
@@ -1843,7 +2221,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/members/departments/{department}/church-responsibilities": {
@@ -1867,6 +2250,9 @@
                     }
                 ],
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "200": {
                         "description": "A list of church responsibilities for the given department",
                         "content": {
@@ -1901,7 +2287,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/members/departments": {
@@ -1913,6 +2304,9 @@
                 "description": "Returns all departments ordered alphabetically. Use this to populate the department dropdown on the member registration form.",
                 "operationId": "4ec5213c7d6eced852ca24df0baa6ef9",
                 "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "200": {
                         "description": "A list of departments",
                         "content": {
@@ -1931,7 +2325,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/provinces": {
@@ -1960,8 +2359,16 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/{district}/sectors": {
@@ -2003,10 +2410,477 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "404": {
                         "description": "District not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/users": {
+            "get": {
+                "tags": [
+                    "Admin: Users"
+                ],
+                "summary": "List all users",
+                "description": "Returns a collection of all user accounts ordered by name. Requires an authenticated admin user.",
+                "operationId": "dac732acdffd418491f3df32e8ee13ef",
+                "responses": {
+                    "200": {
+                        "description": "A list of users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The authenticated user is not an admin"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin: Users"
+                ],
+                "summary": "Create a new user",
+                "description": "Creates a new user account with the `user` role and a randomly generated temporary password. The password is returned once in the response and must be changed on first login.",
+                "operationId": "8eb1f397d2a25ac61085dbd087971a79",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Jane Doe",
+                                        "maxLength": 150
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jane.doe@example.com",
+                                        "maxLength": 150
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        },
+                                        "temporary_password": {
+                                            "description": "One-time temporary password. Only ever returned in this response.",
+                                            "type": "string",
+                                            "example": "aB3xR9pQmZ..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The authenticated user is not an admin"
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "A user with this email already exists."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "A user with this email already exists."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/users/{user}": {
+            "get": {
+                "tags": [
+                    "Admin: Users"
+                ],
+                "summary": "Get a single user",
+                "description": "Returns the details of a specific user account by its ID. Requires an authenticated admin user.",
+                "operationId": "c5a8111fe79c96bc469736506541b686",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "The ID of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The authenticated user is not an admin"
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\User] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin: Users"
+                ],
+                "summary": "Update an existing user",
+                "description": "Updates a user account. All fields are optional.",
+                "operationId": "b27bd5ab583a4557f70c32369314a507",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "The ID of the user to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Jane Doe",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jane.doe@example.com",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The authenticated user is neither an admin nor the account owner"
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\User] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "A user with this email already exists."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "A user with this email already exists."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin: Users"
+                ],
+                "summary": "Delete a user",
+                "description": "Deletes a user account. Requires an authenticated admin user.",
+                "operationId": "abb2e10f251f95c409f4d9de6123c1ff",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "The ID of the user to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "User deleted successfully"
+                    },
+                    "403": {
+                        "description": "The authenticated user is not an admin"
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\User] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/users/{user}/role": {
+            "patch": {
+                "tags": [
+                    "Admin: Users"
+                ],
+                "summary": "Update a user's role",
+                "description": "Changes a user's role. Requires an authenticated admin user.",
+                "operationId": "cd99c56ed6a1e4bf8ab16385eda9ff3d",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "The ID of the user whose role is being changed",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "role"
+                                ],
+                                "properties": {
+                                    "role": {
+                                        "type": "string",
+                                        "example": "admin",
+                                        "enum": [
+                                            "user",
+                                            "admin"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Role updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The authenticated user is not an admin"
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\User] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Role must be one of: user, admin."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "role": [
+                                                    "Role must be one of: user, admin."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/{cellule}/villages": {
@@ -2048,10 +2922,18 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
                     "404": {
                         "description": "Cellule not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         }
     },
@@ -2461,6 +3343,44 @@
                 },
                 "type": "object"
             },
+            "UserResource": {
+                "title": "User",
+                "description": "A user account of the application",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Jane Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "jane.doe@example.com"
+                    },
+                    "role": {
+                        "type": "string",
+                        "example": "user",
+                        "enum": [
+                            "user",
+                            "admin"
+                        ]
+                    },
+                    "must_change_password": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-01-15T10:30:00+00:00",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "VillageResource": {
                 "title": "Village",
                 "properties": {
@@ -2479,9 +3399,20 @@
                 },
                 "type": "object"
             }
+        },
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Laravel Sanctum personal access token. Send as `Authorization: Bearer {token}`.",
+                "scheme": "bearer"
+            }
         }
     },
     "tags": [
+        {
+            "name": "Authentication",
+            "description": "Login, logout, and password reset endpoints"
+        },
         {
             "name": "Provinces",
             "description": "Operations related to provinces"
@@ -2513,6 +3444,10 @@
         {
             "name": "Families",
             "description": "Operations related to families and the members that belong to them"
+        },
+        {
+            "name": "Admin: Users",
+            "description": "Admin-only user account management. Requires an authenticated admin user."
         }
     ]
 }
