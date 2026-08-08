@@ -2075,6 +2075,101 @@
                 ]
             }
         },
+        "/members/exists": {
+            "get": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Check whether a member with this identity already exists",
+                "description": "Looks up members whose first name, last name, and date of birth exactly match the given values. Intended for a live check on the member registration form, fired once all three fields are filled, to warn staff before they create a likely-duplicate record. Returns an empty list when no match is found.",
+                "operationId": "4eec6822a1c4258d422d932867c75143",
+                "parameters": [
+                    {
+                        "name": "first_name",
+                        "in": "query",
+                        "description": "Exact match on first name.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "John"
+                        }
+                    },
+                    {
+                        "name": "last_name",
+                        "in": "query",
+                        "description": "Exact match on last name.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Doe"
+                        }
+                    },
+                    {
+                        "name": "date_birthday",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "1990-05-12"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "Members matching the given identity (may be empty)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/MemberResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error in one or more of the identity fields",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "First name is required."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "first_name": [
+                                                    "First name is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/members/occupations": {
             "get": {
                 "tags": [

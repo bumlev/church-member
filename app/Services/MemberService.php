@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Member;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,6 +14,9 @@ class MemberService
     private const int DEFAULT_PER_PAGE = 20;
 
     private const int MAX_PER_PAGE = 100;
+
+    /** Cap on rows returned by the duplicate-check search — an exact match on all three fields is expected to be rare. */
+    private const int DUPLICATE_CHECK_LIMIT = 10;
 
     private const array MEMBER_RELATIONS = [
         'sex', 'maritalStatus' , 'educations', 'faculties', 'departments', 'churchResponsibilities', 'talents', 'occupations', 'spiritualGifts',
@@ -70,6 +74,20 @@ class MemberService
     {
         return Member::with(self::MEMBER_RELATIONS)
                         ->findOrFail($id);
+    }
+
+    /**
+     * Looks up members that exactly match the given identity fields, used to
+     * warn staff of a likely-duplicate registration while the form is filled.
+     */
+    public static function findPotentialDuplicates(array $criteria): Collection
+    {
+        return Member::where('first_name', $criteria['first_name'])
+                        ->where('last_name', $criteria['last_name'])
+                        ->where('date_birthday', $criteria['date_birthday'])
+                        ->orderBy('id')
+                        ->limit(self::DUPLICATE_CHECK_LIMIT)
+                        ->get();
     }
 
     private static function applyPartialMatchFilters(Builder $query, array $filters): void
