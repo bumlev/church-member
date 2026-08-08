@@ -367,14 +367,41 @@
                     "Families"
                 ],
                 "summary": "List all families",
-                "description": "Returns a collection of all families ordered by family name, together with their members.",
+                "description": "Returns a paginated collection of all families ordered by family name, together with their members.",
                 "operationId": "9339b67ed066a0fea0508296102039ef",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number to retrieve.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1,
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of families per page (max 100).",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 20,
+                            "default": 20,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    }
+                ],
                 "responses": {
                     "401": {
                         "description": "Unauthenticated"
                     },
                     "200": {
-                        "description": "A list of families",
+                        "description": "A paginated list of families",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -384,6 +411,12 @@
                                             "items": {
                                                 "$ref": "#/components/schemas/FamilyResource"
                                             }
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
                                         }
                                     },
                                     "type": "object"
@@ -1380,6 +1413,31 @@
                                 "guardian"
                             ]
                         }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number to retrieve.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1,
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of members per page (max 100).",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 20,
+                            "default": 20,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
                     }
                 ],
                 "responses": {
@@ -1387,7 +1445,7 @@
                         "description": "Unauthenticated"
                     },
                     "200": {
-                        "description": "A list of church members",
+                        "description": "A paginated list of church members",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1397,6 +1455,12 @@
                                             "items": {
                                                 "$ref": "#/components/schemas/MemberResource"
                                             }
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
                                         }
                                     },
                                     "type": "object"
@@ -3395,6 +3459,94 @@
                     "cellule_id": {
                         "type": "integer",
                         "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationLinks": {
+                "title": "Pagination Links",
+                "properties": {
+                    "first": {
+                        "description": "Shared schema components describing Laravel's default paginated-resource\nJSON shape (`links` + `meta`), reused by every paginated list endpoint.\nThis class is never instantiated at runtime.",
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://localhost/api/v1/members?page=1"
+                    },
+                    "last": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://localhost/api/v1/members?page=5"
+                    },
+                    "prev": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "next": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://localhost/api/v1/members?page=2",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationMeta": {
+                "title": "Pagination Meta",
+                "properties": {
+                    "current_page": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "from": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "last_page": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "url": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "example": null,
+                                    "nullable": true
+                                },
+                                "label": {
+                                    "type": "string",
+                                    "example": "1"
+                                },
+                                "active": {
+                                    "type": "boolean",
+                                    "example": true
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "path": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://localhost/api/v1/members"
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "example": 20
+                    },
+                    "to": {
+                        "type": "integer",
+                        "example": 20,
+                        "nullable": true
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": 93
                     }
                 },
                 "type": "object"

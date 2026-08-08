@@ -141,6 +141,10 @@ class FilterMemberRequest extends FormRequest
             'family_id'        => ['nullable', 'array'],
             'family_id.*'      => ['integer', 'exists:family,id'],
             'family_role_type' => ['nullable', Rule::enum(RoleType::class)],
+
+            // ── Pagination ───────────────────────────────────────────────────────
+            'page'     => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ];
     }
 

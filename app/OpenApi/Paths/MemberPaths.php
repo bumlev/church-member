@@ -155,12 +155,14 @@ class MemberPaths
                 required: false,
                 schema: new OA\Schema(type: 'string', enum: ['father', 'mother', 'child', 'guardian'], example: 'child')
             ),
+            new OA\Parameter(name: 'page', description: 'Page number to retrieve.', in: 'query', required: false, schema: new OA\Schema(type: 'integer', minimum: 1, default: 1, example: 1)),
+            new OA\Parameter(name: 'per_page', description: 'Number of members per page (max 100).', in: 'query', required: false, schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 100, default: 20, example: 20)),
         ],
         responses: [
             new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
-                description: 'A list of church members',
+                description: 'A paginated list of church members',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
@@ -168,6 +170,8 @@ class MemberPaths
                             type: 'array',
                             items: new OA\Items(ref: '#/components/schemas/MemberResource')
                         ),
+                        new OA\Property(property: 'links', ref: '#/components/schemas/PaginationLinks'),
+                        new OA\Property(property: 'meta', ref: '#/components/schemas/PaginationMeta'),
                     ]
                 )
             ),
