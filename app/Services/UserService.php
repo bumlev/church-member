@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Notifications\NewAccountNotification;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -37,7 +38,9 @@ class UserService
         $user->email_verified_at = now();
         $user->save();
 
-        Log::warning("Admin-created user [{$user->email}] issued a temporary password. This is only shown once — it must be changed on first login.");
+        $user->notify(new NewAccountNotification($temporaryPassword));
+
+        Log::info("Admin-created user [{$user->email}] issued a temporary password via email.");
 
         return ['user' => $user, 'temporary_password' => $temporaryPassword];
     }
