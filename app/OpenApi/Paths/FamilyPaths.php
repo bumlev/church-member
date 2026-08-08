@@ -15,15 +15,19 @@ class FamilyPaths
     #[OA\PathItem(path: '/families')]
     #[OA\Get(
         path: '/families',
-        description: 'Returns a collection of all families ordered by family name, together with their members.',
+        description: 'Returns a paginated collection of all families ordered by family name, together with their members.',
         summary: 'List all families',
         security: [['sanctum' => []]],
         tags: ['Families'],
+        parameters: [
+            new OA\Parameter(name: 'page', description: 'Page number to retrieve.', in: 'query', required: false, schema: new OA\Schema(type: 'integer', minimum: 1, default: 1, example: 1)),
+            new OA\Parameter(name: 'per_page', description: 'Number of families per page (max 100).', in: 'query', required: false, schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 100, default: 20, example: 20)),
+        ],
         responses: [
             new OA\Response(response: 401, description: 'Unauthenticated'),
             new OA\Response(
                 response: 200,
-                description: 'A list of families',
+                description: 'A paginated list of families',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
@@ -31,6 +35,8 @@ class FamilyPaths
                             type: 'array',
                             items: new OA\Items(ref: '#/components/schemas/FamilyResource')
                         ),
+                        new OA\Property(property: 'links', ref: '#/components/schemas/PaginationLinks'),
+                        new OA\Property(property: 'meta', ref: '#/components/schemas/PaginationMeta'),
                     ]
                 )
             ),

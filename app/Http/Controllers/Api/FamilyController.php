@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddFamilyMemberRequest;
+use App\Http\Requests\FilterFamilyRequest;
 use App\Http\Requests\StoreFamilyRequest;
 use App\Http\Requests\UpdateFamilyRequest;
 use App\Http\Resources\FamilyResource;
@@ -19,10 +20,10 @@ class FamilyController extends Controller
         private readonly FamilyService $familyService
     ) {}
 
-    public function index(): JsonResponse
+    public function index(FilterFamilyRequest $request): JsonResponse
     {
         return FamilyResource::collection(
-            $this->familyService->getAllFamilies()
+            $this->familyService->getAllFamilies($request->validated())
         )->response()->setStatusCode(ResponseAlias::HTTP_OK);
     }
 

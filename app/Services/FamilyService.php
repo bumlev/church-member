@@ -5,20 +5,27 @@ namespace App\Services;
 use App\Enums\RoleType;
 use App\Models\Family;
 use App\Models\FamilyMembership;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
 
 class FamilyService
 {
+    private const int DEFAULT_PER_PAGE = 20;
+
+    private const int MAX_PER_PAGE = 100;
+
     private const array FAMILY_RELATIONS = ['members'];
 
     private const array SINGLE_ACTIVE_ROLES = [RoleType::FATHER, RoleType::MOTHER];
 
-    public static function getAllFamilies(): Collection
+    public static function getAllFamilies(array $filters = []): LengthAwarePaginator
     {
+        $perPage = min((int) ($filters['per_page'] ?? self::DEFAULT_PER_PAGE), self::MAX_PER_PAGE);
+
         return Family::with(self::FAMILY_RELATIONS)
                         ->orderBy('family_name')
-                        ->get();
+                        ->paginate($perPage)
+                        ->withQueryString();
     }
 
     public static function getFamilyById(int $id): Family

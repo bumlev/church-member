@@ -3,13 +3,17 @@
 namespace App\Services;
 
 use App\Models\Member;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 class MemberService
 {
+    private const int DEFAULT_PER_PAGE = 20;
+
+    private const int MAX_PER_PAGE = 100;
+
     private const array MEMBER_RELATIONS = [
         'sex', 'maritalStatus' , 'educations', 'faculties', 'departments', 'churchResponsibilities', 'talents', 'occupations', 'spiritualGifts',
     ];
@@ -41,7 +45,7 @@ class MemberService
         'church_responsibility_id'  => 'churchResponsibilities',
     ];
 
-    public static function filterMembers(array $filters): Collection
+    public static function filterMembers(array $filters): LengthAwarePaginator
     {
         $query = Member::with(self::MEMBER_RELATIONS);
 
@@ -54,9 +58,12 @@ class MemberService
         self::applyRelationIdFilters($query, $filters);
         self::applyFamilyFilters($query, $filters);
 
+        $perPage = min((int) ($filters['per_page'] ?? self::DEFAULT_PER_PAGE), self::MAX_PER_PAGE);
+
         return $query->orderBy('last_name')
                         ->orderBy('first_name')
-                        ->get();
+                        ->paginate($perPage)
+                        ->withQueryString();
     }
 
     public static function getMemberById(String $id): Member
@@ -155,7 +162,7 @@ class MemberService
             }
 
             if ($roleType !== null) {
-                $relationQuery->wherePivot('role_type', $roleType);
+                $relationQuery->where('family_membership.role_type', $roleType);
             }
         });
     }
