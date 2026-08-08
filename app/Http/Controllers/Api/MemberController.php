@@ -17,6 +17,7 @@ use App\Services\DepartmentService;
 use App\Services\EducationService;
 use App\Http\Resources\TalentResource;
 use App\Services\FacultyService;
+use App\Http\Requests\CheckMemberExistsRequest;
 use App\Http\Requests\FilterMemberRequest;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
@@ -54,6 +55,13 @@ class MemberController extends Controller
         return (new MemberResource(
             $this->memberService->getMemberById($member->id)
         ))->response()->setStatusCode(ResponseAlias::HTTP_OK);
+    }
+
+    public function exists(CheckMemberExistsRequest $request): JsonResponse
+    {
+        return MemberResource::collection(
+            $this->memberService->findPotentialDuplicates($request->validated())
+        )->response()->setStatusCode(ResponseAlias::HTTP_OK);
     }
 
     public function store(StoreMemberRequest $request): JsonResponse

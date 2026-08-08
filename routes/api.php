@@ -30,6 +30,9 @@ Route::prefix('v1')->group(function () {
 
 
         Route::prefix('members')->group(function () {
+            // ── Live duplicate check (first_name + last_name + date_birthday) ──
+            Route::get('exists', [MemberController::class, 'exists']);
+
             // ── Member form data (lookup dropdowns) ─────────────────────────
             Route::get('occupations',    [MemberController::class, 'occupations']);
             Route::get('talents',        [MemberController::class, 'talents']);

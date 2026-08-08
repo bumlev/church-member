@@ -346,6 +346,52 @@ class MemberPaths
     )]
     public function show(): void {}
 
+    // ── Live duplicate check ─────────────────────────────────────────────────
+    #[OA\PathItem(path: '/members/exists')]
+    #[OA\Get(
+        path: '/members/exists',
+        description: 'Looks up members whose first name, last name, and date of birth exactly match the given values. Intended for a live check on the member registration form, fired once all three fields are filled, to warn staff before they create a likely-duplicate record. Returns an empty list when no match is found.',
+        summary: 'Check whether a member with this identity already exists',
+        security: [['sanctum' => []]],
+        tags: ['Members'],
+        parameters: [
+            new OA\Parameter(name: 'first_name', description: 'Exact match on first name.', in: 'query', required: true, schema: new OA\Schema(type: 'string', example: 'John')),
+            new OA\Parameter(name: 'last_name', description: 'Exact match on last name.', in: 'query', required: true, schema: new OA\Schema(type: 'string', example: 'Doe')),
+            new OA\Parameter(name: 'date_birthday', description: 'Format: yyyy-mm-dd.', in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'date', example: '1990-05-12')),
+        ],
+        responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(
+                response: 200,
+                description: 'Members matching the given identity (may be empty)',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/MemberResource')
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error in one or more of the identity fields',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'First name is required.'),
+                        new OA\Property(
+                            property: 'errors',
+                            type: 'object',
+                            example: ['first_name' => ['First name is required.']]
+                        ),
+                    ]
+                )
+            ),
+        ]
+    )]
+    public function exists(): void {}
+
     // ── Update a member ──────────────────────────────────────────────────────
     #[OA\Put(
         path: '/members/{id}',
