@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
@@ -30,5 +31,18 @@ class AuthController extends Controller
         $this->authService->logout($request->user());
 
         return response()->json(null, ResponseAlias::HTTP_NO_CONTENT);
+    }
+
+    public function updatePassword(UpdatePasswordRequest $request): JsonResponse
+    {
+        $this->authService->updatePassword(
+            $request->user(),
+            $request->validated('current_password'),
+            $request->validated('password'),
+        );
+
+        return response()->json([
+            'message' => 'Your password has been updated successfully.',
+        ], ResponseAlias::HTTP_OK);
     }
 }

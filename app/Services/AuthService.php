@@ -35,6 +35,27 @@ class AuthService
     }
 
     /**
+     * Lets an authenticated user set a new password for their own account
+     * (e.g. after their first login with an admin-issued temporary password).
+     * Revokes every other token, keeping only the one used for this request.
+     */
+    public static function updatePassword(User $user, string $currentPassword, string $newPassword): void
+    {
+        if (! Hash::check($currentPassword, $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['The provided password is incorrect.'],
+            ]);
+        }
+
+        $user->password = Hash::make($newPassword);
+        $user->must_change_password = false;
+        $user->save();
+
+        $currentTokenId = $user->currentAccessToken()?->id;
+        $user->tokens()->when($currentTokenId, fn ($query) => $query->where('id', '!=', $currentTokenId))->delete();
+    }
+
+    /**
      * Always attempts to send the reset link; the caller returns a generic
      * response regardless of the outcome to avoid leaking which emails exist.
      */

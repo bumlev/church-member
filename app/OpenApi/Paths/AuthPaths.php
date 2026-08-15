@@ -145,4 +145,52 @@ class AuthPaths
         ]
     )]
     public function reset(): void {}
+
+    // ── Change your own password ─────────────────────────────────────────────
+    #[OA\PathItem(path: '/password/change')]
+    #[OA\Post(
+        path: '/password/change',
+        description: 'Lets the authenticated user set a new password for their own account by confirming their current password. Revokes every other bearer token issued to the user, keeping only the one used for this request.',
+        summary: 'Change your password',
+        security: [['sanctum' => []]],
+        tags: ['Authentication'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['current_password', 'password', 'password_confirmation'],
+                properties: [
+                    new OA\Property(property: 'current_password', type: 'string', format: 'password', example: 'secret123'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', example: 'newSecret123'),
+                    new OA\Property(property: 'password_confirmation', type: 'string', format: 'password', example: 'newSecret123'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Password updated successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'Your password has been updated successfully.'),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Incorrect current password or validation error',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'The provided password is incorrect.'),
+                        new OA\Property(
+                            property: 'errors',
+                            type: 'object',
+                            example: ['current_password' => ['The provided password is incorrect.']]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
+    public function updatePassword(): void {}
 }

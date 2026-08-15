@@ -19,6 +19,7 @@ Route::prefix('v1')->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::post('password/forgot', [PasswordResetController::class, 'forgot'])->middleware('throttle:login');
     Route::post('password/reset', [PasswordResetController::class, 'reset']);
+    Route::post('password/change', [AuthController::class, 'updatePassword'])->middleware('auth:sanctum');
 
     Route::middleware('auth:sanctum')->group(function () {
         // ── Geographic ──────────────────────────────────────────────────────
@@ -64,10 +65,3 @@ Route::prefix('v1')->group(function () {
             Route::patch('users/{user}/role', [AdminUserController::class, 'updateRole']);
         });
 });
-
-
-
-
-
-
-

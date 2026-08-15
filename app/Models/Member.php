@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static findOrFail(int $id)
  * @method static orderBy(string $string)
  * @method static create(array $data)
+ * @method static where(string $string, mixed $first_name)
  * @property mixed $id
  * @property mixed $national_id
  * @property mixed $picture
