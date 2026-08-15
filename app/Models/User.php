@@ -25,6 +25,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property mixed|true $must_change_password
  * @property \Carbon\CarbonInterface|mixed $email_verified_at
  * @property mixed $email
+ * @property mixed|string $password
  */
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
@@ -44,6 +45,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'must_change_password' => 'boolean',
         ];
     }
 
