@@ -17,7 +17,6 @@ class AuthPaths
         path: '/login',
         description: 'Authenticates a user with their email and password and returns a bearer token to use for subsequent authenticated requests.',
         summary: 'Log in',
-        tags: ['Authentication'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -28,6 +27,7 @@ class AuthPaths
                 ]
             )
         ),
+        tags: ['Authentication'],
         responses: [
             new OA\Response(
                 response: 200,
@@ -79,7 +79,6 @@ class AuthPaths
         path: '/password/forgot',
         description: 'Sends a password reset token by email if an account exists for the given address. Always responds with a generic message so callers can\'t use it to discover which emails are registered.',
         summary: 'Request a password reset',
-        tags: ['Authentication'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -89,6 +88,7 @@ class AuthPaths
                 ]
             )
         ),
+        tags: ['Authentication'],
         responses: [
             new OA\Response(
                 response: 200,
@@ -110,7 +110,6 @@ class AuthPaths
         path: '/password/reset',
         description: 'Resets a user\'s password using the token they received by email. Revokes all of the user\'s existing bearer tokens.',
         summary: 'Reset a password',
-        tags: ['Authentication'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -123,6 +122,7 @@ class AuthPaths
                 ]
             )
         ),
+        tags: ['Authentication'],
         responses: [
             new OA\Response(
                 response: 200,
@@ -153,7 +153,6 @@ class AuthPaths
         description: 'Lets the authenticated user set a new password for their own account by confirming their current password. Revokes every other bearer token issued to the user, keeping only the one used for this request.',
         summary: 'Change your password',
         security: [['sanctum' => []]],
-        tags: ['Authentication'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -165,6 +164,7 @@ class AuthPaths
                 ]
             )
         ),
+        tags: ['Authentication'],
         responses: [
             new OA\Response(
                 response: 200,

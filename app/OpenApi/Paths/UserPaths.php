@@ -62,7 +62,7 @@ class UserPaths
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'user', ref: '#/components/schemas/UserResource'),
-                        new OA\Property(property: 'temporary_password', type: 'string', example: 'aB3xR9pQmZ...', description: 'One-time temporary password. Only ever returned in this response.'),
+                        new OA\Property(property: 'temporary_password', description: 'One-time temporary password. Only ever returned in this response.', type: 'string', example: 'aB3xR9pQmZ...'),
                     ]
                 )
             ),

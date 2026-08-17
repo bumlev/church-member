@@ -198,6 +198,7 @@ class MemberPaths
         path: '/members',
         description: 'Creates a new church member record. Returns the created member. Submitted as multipart/form-data to support the optional picture upload.',
         summary: 'Create a new member',
+        security: [['sanctum' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
@@ -253,11 +254,11 @@ class MemberPaths
                     new OA\Property(property: 'mobile_tel',        type: 'string',  example: '+250788000000', nullable: true, maxLength: 20),
                     new OA\Property(property: 'email',             type: 'string',  format: 'email', example: 'john@example.com', nullable: true, maxLength: 150),
                     new OA\Property(property: 'national_id',       type: 'string',  example: '1199080012345678', nullable: true, maxLength: 20),
-                    new OA\Property(property: 'picture',           type: 'string',  format: 'binary', description: 'Image file (jpeg, jpg, png, webp), max 2MB', nullable: true),
-                    new OA\Property(property: 'date_birthday',     type: 'string',  format: 'date', example: '1990-05-12', description: 'Format: yyyy-mm-dd'),
-                    new OA\Property(property: 'date_salvation',    type: 'string',  format: 'date', example: '2005-03-20', description: 'Format: yyyy-mm-dd', nullable: true),
-                    new OA\Property(property: 'date_baptism',      type: 'string',  format: 'date', example: '2005-06-15', description: 'Format: yyyy-mm-dd', nullable: true),
-                    new OA\Property(property: 'member_since',      type: 'string',  format: 'date', example: '2010-01-01', description: 'Format: yyyy-mm-dd', nullable: true),
+                    new OA\Property(property: 'picture', description: 'Image file (jpeg, jpg, png, webp), max 2MB', type: 'string', format: 'binary', nullable: true),
+                    new OA\Property(property: 'date_birthday', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '1990-05-12'),
+                    new OA\Property(property: 'date_salvation', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '2005-03-20', nullable: true),
+                    new OA\Property(property: 'date_baptism', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '2005-06-15', nullable: true),
+                    new OA\Property(property: 'member_since', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '2010-01-01', nullable: true),
                     new OA\Property(property: 'province_id',       type: 'integer', example: 1,               nullable: true),
                     new OA\Property(property: 'district_id',       type: 'integer', example: 1,               nullable: true),
                     new OA\Property(property: 'sector_id',         type: 'integer', example: 1,               nullable: true),
@@ -268,7 +269,6 @@ class MemberPaths
                 )
             )
         ),
-        security: [['sanctum' => []]],
         tags: ['Members'],
         responses: [
             new OA\Response(response: 401, description: 'Unauthenticated'),
@@ -397,6 +397,7 @@ class MemberPaths
         path: '/members/{id}',
         description: 'Updates a church member record. All fields are optional (PATCH behaviour). Returns the updated member. Passing a new `picture` replaces and deletes the previous one; omitting it leaves the current picture untouched. Submitted as multipart/form-data to support the picture upload — since PHP does not parse multipart bodies on PUT requests, send this as a POST with a `_method=PUT` field (Laravel\'s standard method-spoofing).',
         summary: 'Update an existing member',
+        security: [['sanctum' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
@@ -453,11 +454,11 @@ class MemberPaths
                     new OA\Property(property: 'mobile_tel',        type: 'string',  example: '+250788000000',    nullable: true, maxLength: 20),
                     new OA\Property(property: 'email',             type: 'string',  format: 'email', example: 'john@example.com', nullable: true, maxLength: 150),
                     new OA\Property(property: 'national_id',       type: 'string',  example: '1199080012345678', nullable: true, maxLength: 20),
-                    new OA\Property(property: 'picture',           type: 'string',  format: 'binary', description: 'Image file (jpeg, jpg, png, webp), max 2MB', nullable: true),
-                    new OA\Property(property: 'date_birthday',     type: 'string',  format: 'date', example: '1990-05-12', description: 'Format: yyyy-mm-dd', nullable: true),
-                    new OA\Property(property: 'date_salvation',    type: 'string',  format: 'date', example: '2005-03-20', description: 'Format: yyyy-mm-dd', nullable: true),
-                    new OA\Property(property: 'date_baptism',      type: 'string',  format: 'date', example: '2005-06-15', description: 'Format: yyyy-mm-dd', nullable: true),
-                    new OA\Property(property: 'member_since',      type: 'string',  format: 'date', example: '2010-01-01', description: 'Format: yyyy-mm-dd', nullable: true),
+                    new OA\Property(property: 'picture', description: 'Image file (jpeg, jpg, png, webp), max 2MB', type: 'string', format: 'binary', nullable: true),
+                    new OA\Property(property: 'date_birthday', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '1990-05-12', nullable: true),
+                    new OA\Property(property: 'date_salvation', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '2005-03-20', nullable: true),
+                    new OA\Property(property: 'date_baptism', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '2005-06-15', nullable: true),
+                    new OA\Property(property: 'member_since', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '2010-01-01', nullable: true),
                     new OA\Property(property: 'province_id',       type: 'integer', example: 1,                  nullable: true),
                     new OA\Property(property: 'district_id',       type: 'integer', example: 1,                  nullable: true),
                     new OA\Property(property: 'sector_id',         type: 'integer', example: 1,                  nullable: true),
@@ -468,7 +469,6 @@ class MemberPaths
                 )
             )
         ),
-        security: [['sanctum' => []]],
         tags: ['Members'],
         parameters: [
             new OA\Parameter(
