@@ -49,6 +49,7 @@ class FamilyPaths
         path: '/families',
         description: 'Creates a new family, optionally assigning members and the role each plays (father, mother, child, guardian). A family may have at most one active father and one active mother at a time.',
         summary: 'Create a new family',
+        security: [['sanctum' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -75,7 +76,6 @@ class FamilyPaths
                 ]
             )
         ),
-        security: [['sanctum' => []]],
         tags: ['Families'],
         responses: [
             new OA\Response(response: 401, description: 'Unauthenticated'),
@@ -152,6 +152,7 @@ class FamilyPaths
         path: '/families/{id}',
         description: 'Updates a family record. All fields are optional. Passing `members` replaces the existing member/role assignments entirely.',
         summary: 'Update an existing family',
+        security: [['sanctum' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -177,7 +178,6 @@ class FamilyPaths
                 ]
             )
         ),
-        security: [['sanctum' => []]],
         tags: ['Families'],
         parameters: [
             new OA\Parameter(
@@ -264,6 +264,7 @@ class FamilyPaths
         path: '/families/{family}/members',
         description: 'Assigns a member to a family with a given role. Rejects a second active (no end_date) father or mother for the same family.',
         summary: 'Add a member to a family',
+        security: [['sanctum' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -276,7 +277,6 @@ class FamilyPaths
                 ]
             )
         ),
-        security: [['sanctum' => []]],
         tags: ['Families'],
         parameters: [
             new OA\Parameter(
