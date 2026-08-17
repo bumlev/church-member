@@ -1,0 +1,3792 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Church Member Management API",
+        "description": "API documentation for the Church Member Management System. Covers geographic data (provinces, districts, sectors, cellules, villages) and member management.",
+        "contact": {
+            "name": "Church Member API Support",
+            "email": "support@church-member.local"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api/v1",
+            "description": "API v1"
+        }
+    ],
+    "paths": {
+        "/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Log in",
+                "description": "Authenticates a user with their email and password and returns a bearer token to use for subsequent authenticated requests.",
+                "operationId": "ef2497651f5b870ac573479c3605e366",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jane.doe@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|aB3xR9pQmZ..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid credentials or validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The provided credentials are incorrect."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "The provided credentials are incorrect."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many login attempts"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Log out",
+                "description": "Revokes the bearer token used to authenticate the current request.",
+                "operationId": "2344782f4f6c3ff16eecb5f5a5cf5458",
+                "responses": {
+                    "204": {
+                        "description": "Logout successful"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/password/forgot": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Request a password reset",
+                "description": "Sends a password reset token by email if an account exists for the given address. Always responds with a generic message so callers can't use it to discover which emails are registered.",
+                "operationId": "d91242831c1103a6198ec61772e7074d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jane.doe@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Request processed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "If an account with that email exists, a password reset link has been sent."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many reset attempts"
+                    }
+                }
+            }
+        },
+        "/password/reset": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Reset a password",
+                "description": "Resets a user's password using the token they received by email. Revokes all of the user's existing bearer tokens.",
+                "operationId": "b2c8f1b6a1d5e3cdbfbd92e77545ccf1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "9d8e2f..."
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jane.doe@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newSecret123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newSecret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Your password has been reset successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid/expired token, unknown user, or validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This password reset token is invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/password/change": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Change your password",
+                "description": "Lets the authenticated user set a new password for their own account by confirming their current password. Revokes every other bearer token issued to the user, keeping only the one used for this request.",
+                "operationId": "236b548962239c40607c4d6b5f279c05",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newSecret123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newSecret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Your password has been updated successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Incorrect current password or validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The provided password is incorrect."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "current_password": [
+                                                    "The provided password is incorrect."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/{sector}/cellules": {
+            "get": {
+                "tags": [
+                    "Cellules"
+                ],
+                "summary": "List cellules by sector",
+                "description": "Returns all cellules belonging to the specified sector, ordered alphabetically.",
+                "operationId": "2740afc149080eac03b7a4ea652383db",
+                "parameters": [
+                    {
+                        "name": "sector",
+                        "in": "path",
+                        "description": "The ID of the sector",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of cellules for the given sector",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/CelluleResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Sector not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/{province}/districts": {
+            "get": {
+                "tags": [
+                    "Districts"
+                ],
+                "summary": "List districts by province",
+                "description": "Returns all districts belonging to the specified province, ordered alphabetically.",
+                "operationId": "97e7972f1a112879ab19d6f5fd361389",
+                "parameters": [
+                    {
+                        "name": "province",
+                        "in": "path",
+                        "description": "The ID of the province",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of districts for the given province",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/DistrictResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Province not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/families": {
+            "get": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "List all families",
+                "description": "Returns a paginated collection of all families ordered by family name, together with their members.",
+                "operationId": "9339b67ed066a0fea0508296102039ef",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number to retrieve.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1,
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of families per page (max 100).",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 20,
+                            "default": 20,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "A paginated list of families",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/FamilyResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "Create a new family",
+                "description": "Creates a new family, optionally assigning members and the role each plays (father, mother, child, guardian). A family may have at most one active father and one active mother at a time.",
+                "operationId": "5c2eefe48f707f79ef7ace002e979600",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "family_name"
+                                ],
+                                "properties": {
+                                    "family_name": {
+                                        "type": "string",
+                                        "example": "The Doe Family",
+                                        "maxLength": 150
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "KG 11 Ave, Kigali",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "date_formed": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-06-12",
+                                        "nullable": true
+                                    },
+                                    "members": {
+                                        "description": "Members to assign to this family, each paired with the role they play",
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "member_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "role_type": {
+                                                    "type": "string",
+                                                    "example": "father",
+                                                    "enum": [
+                                                        "father",
+                                                        "mother",
+                                                        "child",
+                                                        "guardian"
+                                                    ]
+                                                },
+                                                "start_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2010-06-12",
+                                                    "nullable": true
+                                                },
+                                                "end_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": null,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "201": {
+                        "description": "Family created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The family name field is required."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "family_name": [
+                                                    "The family name field is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/families/{id}": {
+            "get": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "Get a single family",
+                "description": "Returns the details of a specific family by its ID, including its members and their roles.",
+                "operationId": "b8b35010db6d75c849d339ff7301eedd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the family",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "Family found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Family not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\Family] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "Update an existing family",
+                "description": "Updates a family record. All fields are optional. Passing `members` replaces the existing member/role assignments entirely.",
+                "operationId": "e5bd4a58dc0bf2f94fb006a14d301a09",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the family to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "family_name": {
+                                        "type": "string",
+                                        "example": "The Doe Family",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "KG 11 Ave, Kigali",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "date_formed": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-06-12",
+                                        "nullable": true
+                                    },
+                                    "members": {
+                                        "description": "Replaces the members assigned to this family, each paired with the role they play",
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "member_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "role_type": {
+                                                    "type": "string",
+                                                    "example": "father",
+                                                    "enum": [
+                                                        "father",
+                                                        "mother",
+                                                        "child",
+                                                        "guardian"
+                                                    ]
+                                                },
+                                                "start_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2010-06-12",
+                                                    "nullable": true
+                                                },
+                                                "end_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": null,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "Family updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Family not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\Family] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This family already has an active father."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "members": [
+                                                    "This family already has an active father."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "Delete a family",
+                "description": "Deletes a family record. Membership rows for this family are removed via cascading delete.",
+                "operationId": "017e9c4733f72f3b93821d0f4e3e80a9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the family to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "204": {
+                        "description": "Family deleted successfully"
+                    },
+                    "404": {
+                        "description": "Family not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\Family] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/families/{family}/members": {
+            "post": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "Add a member to a family",
+                "description": "Assigns a member to a family with a given role. Rejects a second active (no end_date) father or mother for the same family.",
+                "operationId": "7b15f686fa5775af609913f09c16515a",
+                "parameters": [
+                    {
+                        "name": "family",
+                        "in": "path",
+                        "description": "The ID of the family",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "member_id",
+                                    "role_type"
+                                ],
+                                "properties": {
+                                    "member_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "role_type": {
+                                        "type": "string",
+                                        "example": "child",
+                                        "enum": [
+                                            "father",
+                                            "mother",
+                                            "child",
+                                            "guardian"
+                                        ]
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-06-12",
+                                        "nullable": true
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": null,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "201": {
+                        "description": "Member added to the family",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This family already has an active father."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "members": [
+                                                    "This family already has an active father."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/families/{family}/members/{member}": {
+            "delete": {
+                "tags": [
+                    "Families"
+                ],
+                "summary": "Remove a member from a family",
+                "description": "Removes all role assignments a member holds within the given family.",
+                "operationId": "9e4396bd0d82e230ba4b0ff6efffa46b",
+                "parameters": [
+                    {
+                        "name": "family",
+                        "in": "path",
+                        "description": "The ID of the family",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "member",
+                        "in": "path",
+                        "description": "The ID of the member to remove",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "204": {
+                        "description": "Member removed from the family"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/members": {
+            "get": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "List / filter members",
+                "description": "Returns a collection of church members ordered by last name then first name, optionally narrowed down by any combination of the filter query parameters below. Omitting all filters returns every member.",
+                "operationId": "5c0bd7fdc9bc9ea74c2ca580e17dc89d",
+                "parameters": [
+                    {
+                        "name": "first_name",
+                        "in": "query",
+                        "description": "Partial match on first name.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "John"
+                        }
+                    },
+                    {
+                        "name": "last_name",
+                        "in": "query",
+                        "description": "Partial match on last name.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Doe"
+                        }
+                    },
+                    {
+                        "name": "fathers_name",
+                        "in": "query",
+                        "description": "Partial match on father's name.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "James"
+                        }
+                    },
+                    {
+                        "name": "mothers_name",
+                        "in": "query",
+                        "description": "Partial match on mother's name.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Mary"
+                        }
+                    },
+                    {
+                        "name": "national_id",
+                        "in": "query",
+                        "description": "Exact match on national ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "1199080012345678"
+                        }
+                    },
+                    {
+                        "name": "sex_id",
+                        "in": "query",
+                        "description": "One or more sex IDs. Repeat the param (sex_id[]=1&sex_id[]=2), send a comma-separated list (\"1,2\"), or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "marital_status_id",
+                        "in": "query",
+                        "description": "One or more marital status IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "age_min",
+                        "in": "query",
+                        "description": "Minimum age (inclusive), derived from date_birthday.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 18
+                        }
+                    },
+                    {
+                        "name": "age_max",
+                        "in": "query",
+                        "description": "Maximum age (inclusive), derived from date_birthday.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 35
+                        }
+                    },
+                    {
+                        "name": "date_birthday_from",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "1990-01-01"
+                        }
+                    },
+                    {
+                        "name": "date_birthday_to",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2000-12-31"
+                        }
+                    },
+                    {
+                        "name": "date_salvation_from",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2000-01-01"
+                        }
+                    },
+                    {
+                        "name": "date_salvation_to",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2020-12-31"
+                        }
+                    },
+                    {
+                        "name": "date_baptism_from",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2000-01-01"
+                        }
+                    },
+                    {
+                        "name": "date_baptism_to",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2020-12-31"
+                        }
+                    },
+                    {
+                        "name": "member_since_from",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2010-01-01"
+                        }
+                    },
+                    {
+                        "name": "member_since_to",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2020-12-31"
+                        }
+                    },
+                    {
+                        "name": "employed",
+                        "in": "query",
+                        "description": "Exact match. Accepts \"true\"/\"false\" (also \"1\"/\"0\").",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    },
+                    {
+                        "name": "province_id",
+                        "in": "query",
+                        "description": "One or more province IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "district_id",
+                        "in": "query",
+                        "description": "One or more district IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sector_id",
+                        "in": "query",
+                        "description": "One or more sector IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "cellule_id",
+                        "in": "query",
+                        "description": "One or more cellule IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "cell_id",
+                        "in": "query",
+                        "description": "One or more cell IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "village_id",
+                        "in": "query",
+                        "description": "One or more village IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "occupation_id",
+                        "in": "query",
+                        "description": "Member has any of these occupations. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                2
+                            ]
+                        }
+                    },
+                    {
+                        "name": "talent_id",
+                        "in": "query",
+                        "description": "Member has any of these talents. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                4,
+                                7
+                            ]
+                        }
+                    },
+                    {
+                        "name": "spiritual_gift_id",
+                        "in": "query",
+                        "description": "Member has any of these spiritual gifts. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1,
+                                3
+                            ]
+                        }
+                    },
+                    {
+                        "name": "education_id",
+                        "in": "query",
+                        "description": "Member has any of these education levels. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                3
+                            ]
+                        }
+                    },
+                    {
+                        "name": "faculty_id",
+                        "in": "query",
+                        "description": "Member has any of these faculties. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                4,
+                                5
+                            ]
+                        }
+                    },
+                    {
+                        "name": "department_id",
+                        "in": "query",
+                        "description": "Member belongs to any of these departments. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                2
+                            ]
+                        }
+                    },
+                    {
+                        "name": "church_responsibility_id",
+                        "in": "query",
+                        "description": "Member has any of these church responsibilities. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                5
+                            ]
+                        }
+                    },
+                    {
+                        "name": "family_id",
+                        "in": "query",
+                        "description": "Member belongs to any of these families. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                10
+                            ]
+                        }
+                    },
+                    {
+                        "name": "family_role_type",
+                        "in": "query",
+                        "description": "Member holds this role within a family membership. One of: father, mother, child, guardian.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "child",
+                            "enum": [
+                                "father",
+                                "mother",
+                                "child",
+                                "guardian"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number to retrieve.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1,
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of members per page (max 100).",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 20,
+                            "default": 20,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "A paginated list of church members",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/MemberResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error in one or more filter parameters",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Selected sex is invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "sex_id.0": [
+                                                    "Selected sex is invalid."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Create a new member",
+                "description": "Creates a new church member record. Returns the created member. Submitted as multipart/form-data to support the optional picture upload.",
+                "operationId": "e4c9ad62d98c8c2dd7c232daa70c0fb2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "first_name",
+                                    "last_name",
+                                    "talent",
+                                    "spiritual_gift",
+                                    "sex_id",
+                                    "marital_status_id",
+                                    "date_birthday"
+                                ],
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string",
+                                        "example": "John",
+                                        "maxLength": 100
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "Doe",
+                                        "maxLength": 100
+                                    },
+                                    "talent": {
+                                        "description": "IDs of talents selected (at least one required). Submitted as multipart/form-data: use repeated fields (talent[]=1&talent[]=2), a single JSON-encoded string (e.g. \"[1,2]\"), a comma-separated string (e.g. \"1,2\"), or a bare single ID (e.g. talent=1).",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            2
+                                        ],
+                                        "minItems": 1
+                                    },
+                                    "spiritual_gift": {
+                                        "description": "IDs of spiritual gifts selected (at least one required). Submitted as multipart/form-data: use repeated fields (spiritual_gift[]=1&spiritual_gift[]=3), a single JSON-encoded string (e.g. \"[1,3]\"), a comma-separated string (e.g. \"1,3\"), or a bare single ID (e.g. spiritual_gift=1).",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            3
+                                        ],
+                                        "minItems": 1
+                                    },
+                                    "sex_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "marital_status_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "fathers_name": {
+                                        "type": "string",
+                                        "example": "James Doe",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    },
+                                    "mothers_name": {
+                                        "type": "string",
+                                        "example": "Mary Doe",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    },
+                                    "employed": {
+                                        "description": "Submitted as multipart/form-data as the literal string \"true\" or \"false\" (also accepts \"1\"/\"0\").",
+                                        "type": "boolean",
+                                        "example": true,
+                                        "nullable": true
+                                    },
+                                    "occupation": {
+                                        "description": "IDs of occupations selected. Submitted as multipart/form-data: use repeated fields (occupation[]=2), a single JSON-encoded string (e.g. \"[2]\"), a comma-separated string (e.g. \"2,4\"), or a bare single ID (e.g. occupation=2).",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            2
+                                        ],
+                                        "nullable": true
+                                    },
+                                    "education": {
+                                        "description": "Education levels selected, each paired with its own faculty IDs. This is an array of objects, which cannot be expressed as a plain multipart/form-data field — submit it as a single JSON-encoded string, e.g. [{\"education_id\":3,\"faculty\":[4,5]}].",
+                                        "type": "string",
+                                        "example": "[{\"education_id\":3,\"faculty\":[4,5]}]",
+                                        "nullable": true
+                                    },
+                                    "department": {
+                                        "description": "Departments selected, each paired with its own church responsibility IDs. This is an array of objects, which cannot be expressed as a plain multipart/form-data field — submit it as a single JSON-encoded string, e.g. [{\"department_id\":1,\"church_responsibility\":[1,2]}].",
+                                        "type": "string",
+                                        "example": "[{\"department_id\":1,\"church_responsibility\":[1,2]}]",
+                                        "nullable": true
+                                    },
+                                    "mobile_tel": {
+                                        "type": "string",
+                                        "example": "+250788000000",
+                                        "nullable": true,
+                                        "maxLength": 20
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    },
+                                    "national_id": {
+                                        "type": "string",
+                                        "example": "1199080012345678",
+                                        "nullable": true,
+                                        "maxLength": 20
+                                    },
+                                    "picture": {
+                                        "description": "Image file (jpeg, jpg, png, webp), max 2MB",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "date_birthday": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-05-12"
+                                    },
+                                    "date_salvation": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2005-03-20",
+                                        "nullable": true
+                                    },
+                                    "date_baptism": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2005-06-15",
+                                        "nullable": true
+                                    },
+                                    "member_since": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-01-01",
+                                        "nullable": true
+                                    },
+                                    "province_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "district_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "sector_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "cellule_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "cell_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "village_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "201": {
+                        "description": "Member created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/MemberResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The first name field is required."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "first_name": [
+                                                    "The first name field is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/members/{id}": {
+            "get": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Get a single member",
+                "description": "Returns the details of a specific church member by their ID.",
+                "operationId": "b0b124b8898b3d7a84478cd20a50c191",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the member",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "Member found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/MemberResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Member not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\Member] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Update an existing member",
+                "description": "Updates a church member record. All fields are optional (PATCH behaviour). Returns the updated member. Passing a new `picture` replaces and deletes the previous one; omitting it leaves the current picture untouched. Submitted as multipart/form-data to support the picture upload — since PHP does not parse multipart bodies on PUT requests, send this as a POST with a `_method=PUT` field (Laravel's standard method-spoofing).",
+                "operationId": "72d09e50065896e89848007fa4d4930c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the member to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string",
+                                        "example": "John",
+                                        "nullable": true,
+                                        "maxLength": 100
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": "Doe",
+                                        "nullable": true,
+                                        "maxLength": 100
+                                    },
+                                    "talent": {
+                                        "description": "IDs of talents selected (at least one required if provided). Submitted as multipart/form-data: use repeated fields (talent[]=1&talent[]=2), a single JSON-encoded string (e.g. \"[1,2]\"), a comma-separated string (e.g. \"1,2\"), or a bare single ID (e.g. talent=1).",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            2
+                                        ],
+                                        "nullable": true,
+                                        "minItems": 1
+                                    },
+                                    "spiritual_gift": {
+                                        "description": "IDs of spiritual gifts selected (at least one required if provided). Submitted as multipart/form-data: use repeated fields (spiritual_gift[]=1&spiritual_gift[]=3), a single JSON-encoded string (e.g. \"[1,3]\"), a comma-separated string (e.g. \"1,3\"), or a bare single ID (e.g. spiritual_gift=1).",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            3
+                                        ],
+                                        "nullable": true,
+                                        "minItems": 1
+                                    },
+                                    "sex_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "marital_status_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "fathers_name": {
+                                        "type": "string",
+                                        "example": "James Doe",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    },
+                                    "mothers_name": {
+                                        "type": "string",
+                                        "example": "Mary Doe",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    },
+                                    "employed": {
+                                        "description": "Submitted as multipart/form-data as the literal string \"true\" or \"false\" (also accepts \"1\"/\"0\").",
+                                        "type": "boolean",
+                                        "example": true,
+                                        "nullable": true
+                                    },
+                                    "occupation": {
+                                        "description": "IDs of occupations selected. Submitted as multipart/form-data: use repeated fields (occupation[]=2), a single JSON-encoded string (e.g. \"[2]\"), a comma-separated string (e.g. \"2,4\"), or a bare single ID (e.g. occupation=2).",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            2
+                                        ],
+                                        "nullable": true
+                                    },
+                                    "education": {
+                                        "description": "Education levels selected, each paired with its own faculty IDs. This is an array of objects, which cannot be expressed as a plain multipart/form-data field — submit it as a single JSON-encoded string, e.g. [{\"education_id\":3,\"faculty\":[4,5]}].",
+                                        "type": "string",
+                                        "example": "[{\"education_id\":3,\"faculty\":[4,5]}]",
+                                        "nullable": true
+                                    },
+                                    "department": {
+                                        "description": "Departments selected, each paired with its own church responsibility IDs. This is an array of objects, which cannot be expressed as a plain multipart/form-data field — submit it as a single JSON-encoded string, e.g. [{\"department_id\":1,\"church_responsibility\":[1,2]}].",
+                                        "type": "string",
+                                        "example": "[{\"department_id\":1,\"church_responsibility\":[1,2]}]",
+                                        "nullable": true
+                                    },
+                                    "mobile_tel": {
+                                        "type": "string",
+                                        "example": "+250788000000",
+                                        "nullable": true,
+                                        "maxLength": 20
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    },
+                                    "national_id": {
+                                        "type": "string",
+                                        "example": "1199080012345678",
+                                        "nullable": true,
+                                        "maxLength": 20
+                                    },
+                                    "picture": {
+                                        "description": "Image file (jpeg, jpg, png, webp), max 2MB",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "date_birthday": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-05-12",
+                                        "nullable": true
+                                    },
+                                    "date_salvation": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2005-03-20",
+                                        "nullable": true
+                                    },
+                                    "date_baptism": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2005-06-15",
+                                        "nullable": true
+                                    },
+                                    "member_since": {
+                                        "description": "Format: yyyy-mm-dd",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-01-01",
+                                        "nullable": true
+                                    },
+                                    "province_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "district_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "sector_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "cellule_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "cell_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "village_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "Member updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/MemberResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Member not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\Member] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The email must be a valid email address."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "The email must be a valid email address."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/members/exists": {
+            "get": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Check whether a member with this identity already exists",
+                "description": "Looks up members whose first name, last name, and date of birth exactly match the given values. Intended for a live check on the member registration form, fired once all three fields are filled, to warn staff before they create a likely-duplicate record. Returns an empty list when no match is found.",
+                "operationId": "4eec6822a1c4258d422d932867c75143",
+                "parameters": [
+                    {
+                        "name": "first_name",
+                        "in": "query",
+                        "description": "Exact match on first name.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "John"
+                        }
+                    },
+                    {
+                        "name": "last_name",
+                        "in": "query",
+                        "description": "Exact match on last name.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Doe"
+                        }
+                    },
+                    {
+                        "name": "date_birthday",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "1990-05-12"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "Members matching the given identity (may be empty)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/MemberResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error in one or more of the identity fields",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "First name is required."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "first_name": [
+                                                    "First name is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/members/occupations": {
+            "get": {
+                "tags": [
+                    "Member Form Data"
+                ],
+                "summary": "List all occupations",
+                "description": "Returns all occupations ordered alphabetically. Use this to populate the occupation multi-select on the member registration form.",
+                "operationId": "770af66c7f893c4e484f013d68498f8c",
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "A list of occupations",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/OccupationResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/members/talents": {
+            "get": {
+                "tags": [
+                    "Member Form Data"
+                ],
+                "summary": "List all talents",
+                "description": "Returns all talents ordered alphabetically. Use this to populate the talent multi-select on the member registration form.",
+                "operationId": "0936ce2b401151ff1a84664f6396cb8b",
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "A list of talents",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TalentResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/members/spiritual-gifts": {
+            "get": {
+                "tags": [
+                    "Member Form Data"
+                ],
+                "summary": "List all spiritual gifts",
+                "description": "Returns all spiritual gifts ordered alphabetically. Use this to populate the spiritual gift multi-select on the member registration form.",
+                "operationId": "909afa913a125c74ff9d42d346eb0260",
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "A list of spiritual gifts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SpiritualGiftResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/members/educations": {
+            "get": {
+                "tags": [
+                    "Member Form Data"
+                ],
+                "summary": "List all education levels",
+                "description": "Returns all education levels ordered alphabetically. Use this to populate the education dropdown on the member registration form.",
+                "operationId": "e03210adbadc79a69ddf9c886d38bee0",
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "A list of education levels",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/EducationResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/members/educations/{education}/faculties": {
+            "get": {
+                "tags": [
+                    "Member Form Data"
+                ],
+                "summary": "List faculties for an education level",
+                "description": "Returns all faculties available for the given education level, ordered alphabetically. Use this to populate the faculty multi-select on the member registration form once an education level is chosen.",
+                "operationId": "30c15411ac235c66514cfd1e358bb488",
+                "parameters": [
+                    {
+                        "name": "education",
+                        "in": "path",
+                        "description": "The ID of the education level",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "A list of faculties for the given education level",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/FacultyResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Education level not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\Education] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/members/departments/{department}/church-responsibilities": {
+            "get": {
+                "tags": [
+                    "Member Form Data"
+                ],
+                "summary": "List church responsibilities for a department",
+                "description": "Returns all church responsibilities available for the given department, ordered alphabetically. Use this to populate the church responsibility multi-select on the member registration form once a department is chosen.",
+                "operationId": "893c085a1a282178063a9ac5beff5a47",
+                "parameters": [
+                    {
+                        "name": "department",
+                        "in": "path",
+                        "description": "The ID of the department",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "A list of church responsibilities for the given department",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ChurchResponsibilityResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Department not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\Department] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/members/departments": {
+            "get": {
+                "tags": [
+                    "Member Form Data"
+                ],
+                "summary": "List all departments",
+                "description": "Returns all departments ordered alphabetically. Use this to populate the department dropdown on the member registration form.",
+                "operationId": "4ec5213c7d6eced852ca24df0baa6ef9",
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "A list of departments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/DepartmentResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/provinces": {
+            "get": {
+                "tags": [
+                    "Provinces"
+                ],
+                "summary": "List all provinces",
+                "description": "Returns a collection of all provinces ordered alphabetically.",
+                "operationId": "82c2724e220c941a897497a8afdd96af",
+                "responses": {
+                    "200": {
+                        "description": "A list of provinces",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ProvinceResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/{district}/sectors": {
+            "get": {
+                "tags": [
+                    "Sectors"
+                ],
+                "summary": "List sectors by district",
+                "description": "Returns all sectors belonging to the specified district, ordered alphabetically.",
+                "operationId": "59772a6a9ac16018618b773b385b12fb",
+                "parameters": [
+                    {
+                        "name": "district",
+                        "in": "path",
+                        "description": "The ID of the district",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of sectors for the given district",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SectorResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "District not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/users": {
+            "get": {
+                "tags": [
+                    "Admin: Users"
+                ],
+                "summary": "List all users",
+                "description": "Returns a collection of all user accounts ordered by name. Requires an authenticated admin user.",
+                "operationId": "dac732acdffd418491f3df32e8ee13ef",
+                "responses": {
+                    "200": {
+                        "description": "A list of users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The authenticated user is not an admin"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin: Users"
+                ],
+                "summary": "Create a new user",
+                "description": "Creates a new user account with the `user` role and a randomly generated temporary password. The password is returned once in the response and must be changed on first login.",
+                "operationId": "8eb1f397d2a25ac61085dbd087971a79",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Jane Doe",
+                                        "maxLength": 150
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jane.doe@example.com",
+                                        "maxLength": 150
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        },
+                                        "temporary_password": {
+                                            "description": "One-time temporary password. Only ever returned in this response.",
+                                            "type": "string",
+                                            "example": "aB3xR9pQmZ..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The authenticated user is not an admin"
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "A user with this email already exists."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "A user with this email already exists."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/users/{user}": {
+            "get": {
+                "tags": [
+                    "Admin: Users"
+                ],
+                "summary": "Get a single user",
+                "description": "Returns the details of a specific user account by its ID. Requires an authenticated admin user.",
+                "operationId": "c5a8111fe79c96bc469736506541b686",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "The ID of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The authenticated user is not an admin"
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\User] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin: Users"
+                ],
+                "summary": "Update an existing user",
+                "description": "Updates a user account. All fields are optional.",
+                "operationId": "b27bd5ab583a4557f70c32369314a507",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "The ID of the user to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Jane Doe",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jane.doe@example.com",
+                                        "nullable": true,
+                                        "maxLength": 150
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The authenticated user is neither an admin nor the account owner"
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\User] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "A user with this email already exists."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "A user with this email already exists."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin: Users"
+                ],
+                "summary": "Delete a user",
+                "description": "Deletes a user account. Requires an authenticated admin user.",
+                "operationId": "abb2e10f251f95c409f4d9de6123c1ff",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "The ID of the user to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "User deleted successfully"
+                    },
+                    "403": {
+                        "description": "The authenticated user is not an admin"
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\User] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/users/{user}/role": {
+            "patch": {
+                "tags": [
+                    "Admin: Users"
+                ],
+                "summary": "Update a user's role",
+                "description": "Changes a user's role. Requires an authenticated admin user.",
+                "operationId": "cd99c56ed6a1e4bf8ab16385eda9ff3d",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "The ID of the user whose role is being changed",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "role"
+                                ],
+                                "properties": {
+                                    "role": {
+                                        "type": "string",
+                                        "example": "admin",
+                                        "enum": [
+                                            "user",
+                                            "admin"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Role updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The authenticated user is not an admin"
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\User] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Role must be one of: user, admin."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "role": [
+                                                    "Role must be one of: user, admin."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/{cellule}/villages": {
+            "get": {
+                "tags": [
+                    "Villages"
+                ],
+                "summary": "List villages by cellule",
+                "description": "Returns all villages belonging to the specified cellule, ordered alphabetically.",
+                "operationId": "88689b083509e95da4cb02e2002b5bd1",
+                "parameters": [
+                    {
+                        "name": "cellule",
+                        "in": "path",
+                        "description": "The ID of the cellule",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of villages for the given cellule",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/VillageResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Cellule not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CelluleResource": {
+                "title": "Cellule",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "BIBARE"
+                    },
+                    "sector_id": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "ChurchResponsibilityResource": {
+                "title": "ChurchResponsibility",
+                "description": "A church responsibility option, scoped to a department, for the member registration form",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 4
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Choir Leader"
+                    }
+                },
+                "type": "object"
+            },
+            "DepartmentResource": {
+                "title": "Department",
+                "description": "A department option for the member registration form",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "PRAISE & WORSHIP"
+                    }
+                },
+                "type": "object"
+            },
+            "DistrictResource": {
+                "title": "District",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "GASABO"
+                    },
+                    "province_id": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "EducationResource": {
+                "title": "Education",
+                "description": "An education level option for the member registration form",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "BACHELOR"
+                    }
+                },
+                "type": "object"
+            },
+            "FacultyResource": {
+                "title": "Faculty",
+                "description": "A faculty option, scoped to an education level, for the member registration form",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 4
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Faculty of Engineering"
+                    }
+                },
+                "type": "object"
+            },
+            "FamilyMemberResource": {
+                "title": "FamilyMember",
+                "description": "A member within a family, together with the role they play in it",
+                "properties": {
+                    "member_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "example": "John"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "example": "Doe"
+                    },
+                    "role_type": {
+                        "type": "string",
+                        "example": "father",
+                        "enum": [
+                            "father",
+                            "mother",
+                            "child",
+                            "guardian"
+                        ]
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2010-06-12",
+                        "nullable": true
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": null,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "FamilyResource": {
+                "title": "Family",
+                "description": "A family unit grouping members by the role they play within it",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "family_name": {
+                        "type": "string",
+                        "example": "The Doe Family"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "KG 11 Ave, Kigali",
+                        "nullable": true
+                    },
+                    "date_formed": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2010-06-12",
+                        "nullable": true
+                    },
+                    "members": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FamilyMemberResource"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "MemberResource": {
+                "title": "Member",
+                "description": "A church member record",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "example": "John"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "example": "Doe"
+                    },
+                    "talents": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TalentResource"
+                        }
+                    },
+                    "spiritual_gifts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SpiritualGiftResource"
+                        }
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "john.doe@example.com",
+                        "nullable": true
+                    },
+                    "mobile_tel": {
+                        "type": "string",
+                        "example": "+250788000000",
+                        "nullable": true
+                    },
+                    "employed": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "fathers_name": {
+                        "type": "string",
+                        "example": "James Doe",
+                        "nullable": true
+                    },
+                    "mothers_name": {
+                        "type": "string",
+                        "example": "Mary Doe",
+                        "nullable": true
+                    },
+                    "national_id": {
+                        "type": "string",
+                        "example": "1199080012345678",
+                        "nullable": true
+                    },
+                    "picture_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://localhost/storage/members/pictures/abc123.jpg",
+                        "nullable": true
+                    },
+                    "date_birthday": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "1990-05-12",
+                        "nullable": true
+                    },
+                    "age": {
+                        "type": "integer",
+                        "example": 34,
+                        "nullable": true
+                    },
+                    "date_salvation": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2005-03-20",
+                        "nullable": true
+                    },
+                    "date_baptism": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2005-06-15",
+                        "nullable": true
+                    },
+                    "member_since": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2010-01-01",
+                        "nullable": true
+                    },
+                    "sex_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "marital_status_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "occupations": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OccupationResource"
+                        }
+                    },
+                    "educations": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/EducationResource"
+                        }
+                    },
+                    "faculties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FacultyResource"
+                        }
+                    },
+                    "departments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DepartmentResource"
+                        }
+                    },
+                    "church_responsibilities": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ChurchResponsibilityResource"
+                        }
+                    },
+                    "province_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "district_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "sector_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "cellule_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "cell_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "village_id": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "OccupationResource": {
+                "title": "Occupation",
+                "description": "An occupation option for the member registration form",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "TEACHER"
+                    }
+                },
+                "type": "object"
+            },
+            "ProvinceResource": {
+                "title": "Province",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "KIGALI CITY"
+                    }
+                },
+                "type": "object"
+            },
+            "SectorResource": {
+                "title": "Sector",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "KIMIRONKO"
+                    },
+                    "district_id": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "SpiritualGiftResource": {
+                "title": "SpiritualGift",
+                "description": "A spiritual gift option for the member registration form",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Teaching"
+                    }
+                },
+                "type": "object"
+            },
+            "TalentResource": {
+                "title": "Talent",
+                "description": "A talent option for the member registration form",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Singing"
+                    }
+                },
+                "type": "object"
+            },
+            "UserResource": {
+                "title": "User",
+                "description": "A user account of the application",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Jane Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "jane.doe@example.com"
+                    },
+                    "role": {
+                        "type": "string",
+                        "example": "user",
+                        "enum": [
+                            "user",
+                            "admin"
+                        ]
+                    },
+                    "must_change_password": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-01-15T10:30:00+00:00",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "VillageResource": {
+                "title": "Village",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "AKABAHIZI"
+                    },
+                    "cellule_id": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationLinks": {
+                "title": "Pagination Links",
+                "properties": {
+                    "first": {
+                        "description": "Shared schema components describing Laravel's default paginated-resource\nJSON shape (`links` + `meta`), reused by every paginated list endpoint.\nThis class is never instantiated at runtime.",
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://localhost/api/v1/members?page=1"
+                    },
+                    "last": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://localhost/api/v1/members?page=5"
+                    },
+                    "prev": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "next": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://localhost/api/v1/members?page=2",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationMeta": {
+                "title": "Pagination Meta",
+                "properties": {
+                    "current_page": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "from": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "last_page": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "url": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "example": null,
+                                    "nullable": true
+                                },
+                                "label": {
+                                    "type": "string",
+                                    "example": "1"
+                                },
+                                "active": {
+                                    "type": "boolean",
+                                    "example": true
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "path": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://localhost/api/v1/members"
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "example": 20
+                    },
+                    "to": {
+                        "type": "integer",
+                        "example": 20,
+                        "nullable": true
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": 93
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Laravel Sanctum personal access token. Send as `Authorization: Bearer {token}`.",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "Login, logout, and password reset endpoints"
+        },
+        {
+            "name": "Provinces",
+            "description": "Operations related to provinces"
+        },
+        {
+            "name": "Districts",
+            "description": "Operations related to districts"
+        },
+        {
+            "name": "Sectors",
+            "description": "Operations related to sectors"
+        },
+        {
+            "name": "Cellules",
+            "description": "Operations related to cellules"
+        },
+        {
+            "name": "Villages",
+            "description": "Operations related to villages"
+        },
+        {
+            "name": "Members",
+            "description": "Operations related to church members"
+        },
+        {
+            "name": "Member Form Data",
+            "description": "Lookup lists used to populate member registration form dropdowns"
+        },
+        {
+            "name": "Families",
+            "description": "Operations related to families and the members that belong to them"
+        },
+        {
+            "name": "Admin: Users",
+            "description": "Admin-only user account management. Requires an authenticated admin user."
+        }
+    ]
+}
