@@ -11,6 +11,23 @@ use OpenApi\Attributes as OA;
  */
 class MemberPaths
 {
+    // ── Test endpoint ─────────────────────────────────────────────────────────
+    #[OA\PathItem(path: '/test-api')]
+    #[OA\Get(
+        path: '/test-api',
+        description: 'Simple connectivity check that returns a fixed string. Not part of the members resource; used to verify the API is reachable.',
+        summary: 'Test API connectivity',
+        tags: ['Test'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'API is reachable',
+                content: new OA\JsonContent(type: 'string', example: 'test api')
+            ),
+        ]
+    )]
+    public function testApi(): void {}
+
     // ── List all members ─────────────────────────────────────────────────────
     #[OA\PathItem(path: '/members')]
     #[OA\Get(

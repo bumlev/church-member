@@ -43,6 +43,11 @@ class MemberController extends Controller
     ) {}
 
 
+    public function testApi(): JsonResponse
+    {
+        return response()->json('test api', ResponseAlias::HTTP_OK);
+    }
+
     public function index(FilterMemberRequest $request): JsonResponse
     {
         return MemberResource::collection(
