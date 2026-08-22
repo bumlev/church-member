@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
 
+    // ── Test ─────────────────────────────────────────────────────────────────
+    Route::get('test-api', [MemberController::class, 'testApi']);
+
     // ── Authentication ──────────────────────────────────────────────────────
     Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
