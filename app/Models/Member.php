@@ -17,6 +17,32 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property mixed $national_id
  * @property mixed $picture
  * @property-read int|null $age
+ * @property mixed $first_name
+ * @property mixed $last_name
+ * @property mixed $sex
+ * @property mixed $maritalStatus
+ * @property mixed $date_birthday
+ * @property mixed $email
+ * @property mixed $mobile_tel
+ * @property mixed $employed
+ * @property mixed $fathers_name
+ * @property mixed $mothers_name
+ * @property mixed $date_salvation
+ * @property mixed $date_baptism
+ * @property mixed $member_since
+ * @property mixed $province
+ * @property mixed $district
+ * @property mixed $sector
+ * @property mixed $cellule
+ * @property mixed $cell
+ * @property mixed $village
+ * @property mixed $occupations
+ * @property mixed $educations
+ * @property mixed $faculties
+ * @property mixed $departments
+ * @property mixed $churchResponsibilities
+ * @property mixed $talents
+ * @property mixed $spiritualGifts
  */
 class Member extends Model
 {

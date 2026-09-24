@@ -1070,6 +1070,29 @@
                 ]
             }
         },
+        "/test-api": {
+            "get": {
+                "tags": [
+                    "Test"
+                ],
+                "summary": "Test API connectivity",
+                "description": "Simple connectivity check that returns a fixed string. Not part of the members resource; used to verify the API is reachable.",
+                "operationId": "b1ea6fbaee85424fb605839f2d831412",
+                "responses": {
+                    "200": {
+                        "description": "API is reachable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                },
+                                "example": "test api"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/members": {
             "get": {
                 "tags": [
@@ -1818,6 +1841,490 @@
                                             "example": {
                                                 "first_name": [
                                                     "The first name field is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/members/export": {
+            "get": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Export filtered members to Excel",
+                "description": "Downloads an Excel (.xlsx) sheet of every member matching the filters, using exactly the same filter query parameters as GET /members. The export is not paginated: `page` and `per_page` are ignored and all matching members are included. Related records (sex, marital status, location, occupations, talents, etc.) are written as names rather than IDs.",
+                "operationId": "6f0c17ed8a998ef8633284c0d25f6de7",
+                "parameters": [
+                    {
+                        "name": "first_name",
+                        "in": "query",
+                        "description": "Partial match on first name.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "John"
+                        }
+                    },
+                    {
+                        "name": "last_name",
+                        "in": "query",
+                        "description": "Partial match on last name.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Doe"
+                        }
+                    },
+                    {
+                        "name": "fathers_name",
+                        "in": "query",
+                        "description": "Partial match on father's name.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "James"
+                        }
+                    },
+                    {
+                        "name": "mothers_name",
+                        "in": "query",
+                        "description": "Partial match on mother's name.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Mary"
+                        }
+                    },
+                    {
+                        "name": "national_id",
+                        "in": "query",
+                        "description": "Exact match on national ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "1199080012345678"
+                        }
+                    },
+                    {
+                        "name": "sex_id",
+                        "in": "query",
+                        "description": "One or more sex IDs. Repeat the param (sex_id[]=1&sex_id[]=2), send a comma-separated list (\"1,2\"), or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "marital_status_id",
+                        "in": "query",
+                        "description": "One or more marital status IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "age_min",
+                        "in": "query",
+                        "description": "Minimum age (inclusive), derived from date_birthday.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 18
+                        }
+                    },
+                    {
+                        "name": "age_max",
+                        "in": "query",
+                        "description": "Maximum age (inclusive), derived from date_birthday.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 35
+                        }
+                    },
+                    {
+                        "name": "date_birthday_from",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "1990-01-01"
+                        }
+                    },
+                    {
+                        "name": "date_birthday_to",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2000-12-31"
+                        }
+                    },
+                    {
+                        "name": "date_salvation_from",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2000-01-01"
+                        }
+                    },
+                    {
+                        "name": "date_salvation_to",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2020-12-31"
+                        }
+                    },
+                    {
+                        "name": "date_baptism_from",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2000-01-01"
+                        }
+                    },
+                    {
+                        "name": "date_baptism_to",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2020-12-31"
+                        }
+                    },
+                    {
+                        "name": "member_since_from",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2010-01-01"
+                        }
+                    },
+                    {
+                        "name": "member_since_to",
+                        "in": "query",
+                        "description": "Format: yyyy-mm-dd.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2020-12-31"
+                        }
+                    },
+                    {
+                        "name": "employed",
+                        "in": "query",
+                        "description": "Exact match. Accepts \"true\"/\"false\" (also \"1\"/\"0\").",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    },
+                    {
+                        "name": "province_id",
+                        "in": "query",
+                        "description": "One or more province IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "district_id",
+                        "in": "query",
+                        "description": "One or more district IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sector_id",
+                        "in": "query",
+                        "description": "One or more sector IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "cellule_id",
+                        "in": "query",
+                        "description": "One or more cellule IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "cell_id",
+                        "in": "query",
+                        "description": "One or more cell IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "village_id",
+                        "in": "query",
+                        "description": "One or more village IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "occupation_id",
+                        "in": "query",
+                        "description": "Member has any of these occupations. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                2
+                            ]
+                        }
+                    },
+                    {
+                        "name": "talent_id",
+                        "in": "query",
+                        "description": "Member has any of these talents. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                4,
+                                7
+                            ]
+                        }
+                    },
+                    {
+                        "name": "spiritual_gift_id",
+                        "in": "query",
+                        "description": "Member has any of these spiritual gifts. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1,
+                                3
+                            ]
+                        }
+                    },
+                    {
+                        "name": "education_id",
+                        "in": "query",
+                        "description": "Member has any of these education levels. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                3
+                            ]
+                        }
+                    },
+                    {
+                        "name": "faculty_id",
+                        "in": "query",
+                        "description": "Member has any of these faculties. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                4,
+                                5
+                            ]
+                        }
+                    },
+                    {
+                        "name": "department_id",
+                        "in": "query",
+                        "description": "Member belongs to any of these departments. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                2
+                            ]
+                        }
+                    },
+                    {
+                        "name": "church_responsibility_id",
+                        "in": "query",
+                        "description": "Member has any of these church responsibilities. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                5
+                            ]
+                        }
+                    },
+                    {
+                        "name": "family_id",
+                        "in": "query",
+                        "description": "Member belongs to any of these families. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                10
+                            ]
+                        }
+                    },
+                    {
+                        "name": "family_role_type",
+                        "in": "query",
+                        "description": "Member holds this role within a family membership. One of: father, mother, child, guardian.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "child",
+                            "enum": [
+                                "father",
+                                "mother",
+                                "child",
+                                "guardian"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "Excel workbook of the filtered members, sent as an attachment (members-YYYY-MM-DD_HHMMSS.xlsx)",
+                        "content": {
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error in one or more filter parameters",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Selected sex is invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "sex_id.0": [
+                                                    "Selected sex is invalid."
                                                 ]
                                             }
                                         }
@@ -3787,6 +4294,10 @@
         {
             "name": "Admin: Users",
             "description": "Admin-only user account management. Requires an authenticated admin user."
+        },
+        {
+            "name": "Test",
+            "description": "Test"
         }
     ]
 }

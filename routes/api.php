@@ -37,6 +37,9 @@ Route::prefix('v1')->group(function () {
             // ── Live duplicate check (first_name + last_name + date_birthday) ──
             Route::get('exists', [MemberController::class, 'exists']);
 
+            // ── Excel export of the filtered member list (same filters as index) ──
+            Route::get('export', [MemberController::class, 'export']);
+
             // ── Member form data (lookup dropdowns) ─────────────────────────
             Route::get('occupations',    [MemberController::class, 'occupations']);
             Route::get('talents',        [MemberController::class, 'talents']);
