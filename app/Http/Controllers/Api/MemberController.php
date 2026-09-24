@@ -22,12 +22,14 @@ use App\Http\Requests\FilterMemberRequest;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
 use App\Models\Member;
+use App\Services\MemberExportService;
 use App\Services\MemberService;
 use App\Services\OccupationService;
 use App\Services\SpiritualGiftService;
 use App\Services\TalentService;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MemberController extends Controller
 {
@@ -53,6 +55,14 @@ class MemberController extends Controller
         return MemberResource::collection(
             $this->memberService->filterMembers($request->validated())
         )->response()->setStatusCode(ResponseAlias::HTTP_OK);
+    }
+
+    public function export(FilterMemberRequest $request): StreamedResponse
+    {
+        return MemberExportService::download(
+            $this->memberService->filterMembersForExport($request->validated()),
+            'members-' . now()->format('Y-m-d_His') . '.xlsx'
+        );
     }
 
     public function show(Member $member): JsonResponse

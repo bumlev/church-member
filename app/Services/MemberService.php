@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\LazyCollection;
 
 class MemberService
 {
@@ -21,6 +22,11 @@ class MemberService
     private const array MEMBER_RELATIONS = [
         'sex', 'maritalStatus' , 'educations', 'faculties', 'departments', 'churchResponsibilities', 'talents', 'occupations', 'spiritualGifts',
     ];
+
+    /** Extra relations the Excel export needs to print location names instead of IDs. */
+    private const array EXPORT_RELATIONS = ['province', 'district', 'sector', 'cellule', 'cell', 'village'];
+
+    private const int EXPORT_CHUNK_SIZE = 500;
 
     private const string PICTURE_DISK = 'public';
 
@@ -51,6 +57,26 @@ class MemberService
 
     public static function filterMembers(array $filters): LengthAwarePaginator
     {
+        $perPage = min((int) ($filters['per_page'] ?? self::DEFAULT_PER_PAGE), self::MAX_PER_PAGE);
+
+        return self::buildFilterQuery($filters)
+                        ->paginate($perPage)
+                        ->withQueryString();
+    }
+
+    /**
+     * Same filters as filterMembers() but unpaginated, streamed lazily so a
+     * large export does not load every member into memory at once.
+     */
+    public static function filterMembersForExport(array $filters): LazyCollection
+    {
+        return self::buildFilterQuery($filters)
+                        ->with(self::EXPORT_RELATIONS)
+                        ->lazy(self::EXPORT_CHUNK_SIZE);
+    }
+
+    private static function buildFilterQuery(array $filters): Builder
+    {
         $query = Member::with(self::MEMBER_RELATIONS);
 
         self::applyPartialMatchFilters($query, $filters);
@@ -62,12 +88,9 @@ class MemberService
         self::applyRelationIdFilters($query, $filters);
         self::applyFamilyFilters($query, $filters);
 
-        $perPage = min((int) ($filters['per_page'] ?? self::DEFAULT_PER_PAGE), self::MAX_PER_PAGE);
-
         return $query->orderBy('last_name')
                         ->orderBy('first_name')
-                        ->paginate($perPage)
-                        ->withQueryString();
+                        ->orderBy('id');
     }
 
     public static function getMemberById(String $id): Member
