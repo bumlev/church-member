@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources;
 
+use App\Services\MemberPictureService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 use OpenApi\Attributes as OA;
 
 /**
@@ -56,7 +56,14 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'fathers_name',       type: 'string',  example: 'James Doe',            nullable: true),
         new OA\Property(property: 'mothers_name',       type: 'string',  example: 'Mary Doe',             nullable: true),
         new OA\Property(property: 'national_id',        type: 'string',  example: '1199080012345678',     nullable: true),
-        new OA\Property(property: 'picture_url',        type: 'string',  format: 'uri', example: 'http://localhost/storage/members/pictures/abc123.jpg', nullable: true),
+        new OA\Property(
+            property: 'picture_url',
+            description: 'Public URL of the picture. Served from DigitalOcean Spaces (CDN) once mirrored, otherwise from local storage.',
+            type: 'string',
+            format: 'uri',
+            example: 'https://church-member.fra1.cdn.digitaloceanspaces.com/members/pictures/abc123.jpg',
+            nullable: true
+        ),
         new OA\Property(property: 'date_birthday',      type: 'string',  format: 'date', example: '1990-05-12', nullable: true),
         new OA\Property(property: 'age',                type: 'integer', example: 34, nullable: true),
         new OA\Property(property: 'date_salvation',     type: 'string',  format: 'date', example: '2005-03-20', nullable: true),
@@ -113,7 +120,7 @@ class MemberResource extends JsonResource
             'fathers_name'      => $this->fathers_name,
             'mothers_name'      => $this->mothers_name,
             'national_id'       => $this->national_id,
-            'picture_url'       => $this->picture ? Storage::disk('public')->url($this->picture) : null,
+            'picture_url'       => MemberPictureService::url($this->picture, (bool) $this->picture_on_remote),
             'date_birthday'     => $this->date_birthday?->toDateString(),
             'age'               => $this->age,
             'date_salvation'    => $this->date_salvation?->toDateString(),

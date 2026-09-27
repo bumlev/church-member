@@ -7,7 +7,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
 
 class MemberService
@@ -27,10 +26,6 @@ class MemberService
     private const array EXPORT_RELATIONS = ['province', 'district', 'sector', 'cellule', 'cell', 'village'];
 
     private const int EXPORT_CHUNK_SIZE = 500;
-
-    private const string PICTURE_DISK = 'public';
-
-    private const string PICTURE_DIRECTORY = 'members/pictures';
 
     /** Fields matched with `LIKE %value%` rather than an exact value. */
     private const array PARTIAL_MATCH_FIELDS = ['first_name', 'last_name', 'fathers_name', 'mothers_name'];
@@ -224,6 +219,7 @@ class MemberService
         $data = self::preparePicture($data);
 
         $member = Member::create($data);
+        MemberPictureService::mirror($member);
         $member->faculties()->sync(self::pivotFromEducationEntries($educationEntries));
         $member->churchResponsibilities()->sync(self::pivotFromDepartmentEntries($departmentEntries));
         $member->talents()->sync($talentIds);
@@ -263,6 +259,11 @@ class MemberService
         $data = self::preparePicture($data, $member);
 
         $member->update($data);
+
+        if (array_key_exists('picture', $data)) {
+            MemberPictureService::mirror($member);
+        }
+
         return $member->fresh(self::MEMBER_RELATIONS);
     }
 
@@ -301,9 +302,9 @@ class MemberService
     }
 
     /**
-     * Stores a newly uploaded picture on the public disk and replaces the
-     * previous file (if any). When no new file is uploaded, the existing
-     * picture path is left untouched.
+     * Stores a newly uploaded picture and replaces the previous file (if any).
+     * The new file is not mirrored to remote storage yet, so the sync flag is
+     * reset. When no new file is uploaded, the existing picture is left untouched.
      */
     private static function preparePicture(array $data, ?Member $member = null): array
     {
@@ -313,12 +314,8 @@ class MemberService
             return $data;
         }
 
-        if ($member?->picture) {
-            Storage::disk(self::PICTURE_DISK)->delete($member->picture);
-        }
-
-        $data['picture'] = Storage::disk(self::PICTURE_DISK)
-            ->putFile(self::PICTURE_DIRECTORY, $data['picture']);
+        $data['picture'] = MemberPictureService::store($data['picture'], $member?->picture);
+        $data['picture_on_remote'] = false;
 
         return $data;
     }

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property mixed $id
  * @property mixed $national_id
  * @property mixed $picture
+ * @property bool $picture_on_remote
  * @property-read int|null $age
  * @property mixed $first_name
  * @property mixed $last_name
@@ -62,6 +63,7 @@ class Member extends Model
         'email',
         'national_id',
         'picture',
+        'picture_on_remote',
         'date_birthday',
         'date_salvation',
         'date_baptism',
@@ -75,11 +77,12 @@ class Member extends Model
     ];
 
     protected $casts = [
-        'employed'       => 'boolean',
-        'date_birthday'  => 'date',
-        'date_salvation' => 'date',
-        'date_baptism'   => 'date',
-        'member_since'   => 'date',
+        'employed'          => 'boolean',
+        'picture_on_remote' => 'boolean',
+        'date_birthday'     => 'date',
+        'date_salvation'    => 'date',
+        'date_baptism'      => 'date',
+        'member_since'      => 'date',
     ];
 
     protected $appends = [

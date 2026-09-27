@@ -3924,9 +3924,10 @@
                         "nullable": true
                     },
                     "picture_url": {
+                        "description": "Public URL of the picture. Served from DigitalOcean Spaces (CDN) once mirrored, otherwise from local storage.",
                         "type": "string",
                         "format": "uri",
-                        "example": "http://localhost/storage/members/pictures/abc123.jpg",
+                        "example": "https://church-member.fra1.cdn.digitaloceanspaces.com/members/pictures/abc123.jpg",
                         "nullable": true
                     },
                     "date_birthday": {
