@@ -118,7 +118,7 @@ class UpdateMemberRequest extends FormRequest
                 'nullable', 'string', 'max:20',
                 Rule::unique('member', 'national_id')->ignore($this->route('member')),
             ],
-            'picture'           => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
+            'pictureFile'       => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
 
             // ── Optional dates ─────────────────────────────────────────────────
             'date_salvation'    => ['nullable', 'date_format:Y-m-d'],
@@ -196,9 +196,9 @@ class UpdateMemberRequest extends FormRequest
             'marital_status_id.exists'   => 'Selected marital status is invalid.',
             'national_id.max'            => 'National ID must not exceed 20 characters.',
             'national_id.unique'         => 'This national ID is already assigned to another member.',
-            'picture.image'              => 'Picture must be an image file.',
-            'picture.mimes'              => 'Picture must be a file of type: jpeg, jpg, png, webp.',
-            'picture.max'                => 'Picture must not exceed 2MB.',
+            'pictureFile.image'            => 'Picture must be an image file.',
+            'pictureFile.mimes'            => 'Picture must be a file of type: jpeg, jpg, png, webp.',
+            'pictureFile.max'              => 'Picture must not exceed 2MB.',
             'date_birthday.date_format'  => 'Date of birth must be in the format yyyy-mm-dd.',
             'date_salvation.date_format' => 'Date of salvation must be in the format yyyy-mm-dd.',
             'date_baptism.date_format'   => 'Date of baptism must be in the format yyyy-mm-dd.',

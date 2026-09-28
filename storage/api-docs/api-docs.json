@@ -1738,7 +1738,7 @@
                                         "nullable": true,
                                         "maxLength": 20
                                     },
-                                    "picture": {
+                                    "pictureFile": {
                                         "description": "Image file (jpeg, jpg, png, webp), max 2MB",
                                         "type": "string",
                                         "format": "binary",
@@ -2409,7 +2409,7 @@
                     "Members"
                 ],
                 "summary": "Update an existing member",
-                "description": "Updates a church member record. All fields are optional (PATCH behaviour). Returns the updated member. Passing a new `picture` replaces and deletes the previous one; omitting it leaves the current picture untouched. Submitted as multipart/form-data to support the picture upload — since PHP does not parse multipart bodies on PUT requests, send this as a POST with a `_method=PUT` field (Laravel's standard method-spoofing).",
+                "description": "Updates a church member record. All fields are optional (PATCH behaviour). Returns the updated member. Passing a new `pictureFile` replaces and deletes the previous one; omitting it leaves the current picture untouched. Submitted as multipart/form-data to support the picture upload — since PHP does not parse multipart bodies on PUT requests, send this as a POST with a `_method=PUT` field (Laravel's standard method-spoofing).",
                 "operationId": "72d09e50065896e89848007fa4d4930c",
                 "parameters": [
                     {
@@ -2537,7 +2537,7 @@
                                         "nullable": true,
                                         "maxLength": 20
                                     },
-                                    "picture": {
+                                    "pictureFile": {
                                         "description": "Image file (jpeg, jpg, png, webp), max 2MB",
                                         "type": "string",
                                         "format": "binary",

@@ -305,16 +305,18 @@ class MemberService
      * Stores a newly uploaded picture and replaces the previous file (if any).
      * The new file is not mirrored to remote storage yet, so the sync flag is
      * reset. When no new file is uploaded, the existing picture is left untouched.
+     * The upload arrives as `pictureFile`; the stored path goes in the `picture` column.
      */
     private static function preparePicture(array $data, ?Member $member = null): array
     {
-        if (!($data['picture'] ?? null) instanceof UploadedFile) {
-            unset($data['picture']);
+        $file = $data['pictureFile'] ?? null;
+        unset($data['pictureFile'], $data['picture']);
 
+        if (!$file instanceof UploadedFile) {
             return $data;
         }
 
-        $data['picture'] = MemberPictureService::store($data['picture'], $member?->picture);
+        $data['picture'] = MemberPictureService::store($file, $member?->picture);
         $data['picture_on_remote'] = false;
 
         return $data;

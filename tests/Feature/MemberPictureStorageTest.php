@@ -61,7 +61,7 @@ class MemberPictureStorageTest extends TestCase
         $oldPath = $member->picture;
 
         $this->actingAs(User::factory()->create(), 'sanctum')
-            ->put("/api/v1/members/{$member->id}", ['picture' => self::fakePicture('new.png')], ['Accept' => 'application/json'])
+            ->put("/api/v1/members/{$member->id}", ['pictureFile' => self::fakePicture('new.png')], ['Accept' => 'application/json'])
             ->assertOk();
 
         $newPath = $member->fresh()->picture;
@@ -159,7 +159,7 @@ class MemberPictureStorageTest extends TestCase
                 'date_birthday'     => '1990-05-12',
                 'talent'            => [Talent::create(['name' => 'Singing'])->id],
                 'spiritual_gift'    => [SpiritualGift::create(['name' => 'Teaching'])->id],
-                'picture'           => self::fakePicture('me.png'),
+                'pictureFile'       => self::fakePicture('me.png'),
             ], ['Accept' => 'application/json']);
     }
 
