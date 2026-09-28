@@ -444,7 +444,7 @@ class MemberPaths
                     new OA\Property(property: 'mobile_tel',        type: 'string',  example: '+250788000000', nullable: true, maxLength: 20),
                     new OA\Property(property: 'email',             type: 'string',  format: 'email', example: 'john@example.com', nullable: true, maxLength: 150),
                     new OA\Property(property: 'national_id',       type: 'string',  example: '1199080012345678', nullable: true, maxLength: 20),
-                    new OA\Property(property: 'picture', description: 'Image file (jpeg, jpg, png, webp), max 2MB', type: 'string', format: 'binary', nullable: true),
+                    new OA\Property(property: 'pictureFile', description: 'Image file (jpeg, jpg, png, webp), max 2MB', type: 'string', format: 'binary', nullable: true),
                     new OA\Property(property: 'date_birthday', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '1990-05-12'),
                     new OA\Property(property: 'date_salvation', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '2005-03-20', nullable: true),
                     new OA\Property(property: 'date_baptism', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '2005-06-15', nullable: true),
@@ -585,7 +585,7 @@ class MemberPaths
     // ── Update a member ──────────────────────────────────────────────────────
     #[OA\Put(
         path: '/members/{id}',
-        description: 'Updates a church member record. All fields are optional (PATCH behaviour). Returns the updated member. Passing a new `picture` replaces and deletes the previous one; omitting it leaves the current picture untouched. Submitted as multipart/form-data to support the picture upload — since PHP does not parse multipart bodies on PUT requests, send this as a POST with a `_method=PUT` field (Laravel\'s standard method-spoofing).',
+        description: 'Updates a church member record. All fields are optional (PATCH behaviour). Returns the updated member. Passing a new `pictureFile` replaces and deletes the previous one; omitting it leaves the current picture untouched. Submitted as multipart/form-data to support the picture upload — since PHP does not parse multipart bodies on PUT requests, send this as a POST with a `_method=PUT` field (Laravel\'s standard method-spoofing).',
         summary: 'Update an existing member',
         security: [['sanctum' => []]],
         requestBody: new OA\RequestBody(
@@ -644,7 +644,7 @@ class MemberPaths
                     new OA\Property(property: 'mobile_tel',        type: 'string',  example: '+250788000000',    nullable: true, maxLength: 20),
                     new OA\Property(property: 'email',             type: 'string',  format: 'email', example: 'john@example.com', nullable: true, maxLength: 150),
                     new OA\Property(property: 'national_id',       type: 'string',  example: '1199080012345678', nullable: true, maxLength: 20),
-                    new OA\Property(property: 'picture', description: 'Image file (jpeg, jpg, png, webp), max 2MB', type: 'string', format: 'binary', nullable: true),
+                    new OA\Property(property: 'pictureFile', description: 'Image file (jpeg, jpg, png, webp), max 2MB', type: 'string', format: 'binary', nullable: true),
                     new OA\Property(property: 'date_birthday', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '1990-05-12', nullable: true),
                     new OA\Property(property: 'date_salvation', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '2005-03-20', nullable: true),
                     new OA\Property(property: 'date_baptism', description: 'Format: yyyy-mm-dd', type: 'string', format: 'date', example: '2005-06-15', nullable: true),
