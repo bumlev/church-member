@@ -53,6 +53,18 @@ class MemberPictureStorageTest extends TestCase
         Queue::assertNothingPushed();
     }
 
+    public function test_old_picture_field_is_rejected(): void
+    {
+        $member = $this->makeMember();
+
+        $this->actingAs(User::factory()->create(), 'sanctum')
+            ->put("/api/v1/members/{$member->id}", ['picture' => self::fakePicture('old.png')], ['Accept' => 'application/json'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('picture');
+
+        $this->assertNull($member->fresh()->picture);
+    }
+
     public function test_replacing_picture_deletes_old_one_everywhere(): void
     {
         Queue::fake();

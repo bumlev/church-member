@@ -310,7 +310,7 @@ class MemberService
     private static function preparePicture(array $data, ?Member $member = null): array
     {
         $file = $data['pictureFile'] ?? null;
-        unset($data['pictureFile'], $data['picture']);
+        unset($data['pictureFile']);
 
         if (!$file instanceof UploadedFile) {
             return $data;

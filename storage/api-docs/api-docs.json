@@ -1739,7 +1739,7 @@
                                         "maxLength": 20
                                     },
                                     "pictureFile": {
-                                        "description": "Image file (jpeg, jpg, png, webp), max 2MB",
+                                        "description": "Image file (jpeg, jpg, png, webp), max 2MB. The old `picture` field name is rejected with 422.",
                                         "type": "string",
                                         "format": "binary",
                                         "nullable": true
@@ -2538,7 +2538,7 @@
                                         "maxLength": 20
                                     },
                                     "pictureFile": {
-                                        "description": "Image file (jpeg, jpg, png, webp), max 2MB",
+                                        "description": "Image file (jpeg, jpg, png, webp), max 2MB. The old `picture` field name is rejected with 422.",
                                         "type": "string",
                                         "format": "binary",
                                         "nullable": true
