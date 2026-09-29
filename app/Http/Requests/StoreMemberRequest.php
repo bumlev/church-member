@@ -116,8 +116,6 @@ class StoreMemberRequest extends FormRequest
             'employed'          => ['nullable', 'boolean'],
             'national_id'       => ['nullable', 'string', 'max:20', 'unique:member,national_id'],
             'pictureFile'       => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
-            // Old field name — reject it so stale clients fail loudly instead of silently saving no picture.
-            'picture'           => ['prohibited'],
 
             // ── Optional dates ─────────────────────────────────────────────────
             'date_salvation'    => ['nullable', 'date_format:Y-m-d'],
@@ -198,7 +196,6 @@ class StoreMemberRequest extends FormRequest
             'pictureFile.image'            => 'Picture must be an image file.',
             'pictureFile.mimes'            => 'Picture must be a file of type: jpeg, jpg, png, webp.',
             'pictureFile.max'              => 'Picture must not exceed 2MB.',
-            'picture.prohibited'           => 'The picture field was renamed: upload the file as pictureFile.',
             'date_birthday.date_format'  => 'Date of birth must be in the format yyyy-mm-dd.',
             'date_salvation.date_format' => 'Date of salvation must be in the format yyyy-mm-dd.',
             'date_baptism.date_format'   => 'Date of baptism must be in the format yyyy-mm-dd.',

@@ -215,11 +215,11 @@ class MemberService
         unset($data['spiritual_gift']);
         $occupationIds = $data['occupation'] ?? [];
         unset($data['occupation']);
-
-        $data = self::preparePicture($data);
+        $pictureFile = $data['pictureFile'] ?? null;
+        unset($data['pictureFile']);
 
         $member = Member::create($data);
-        MemberPictureService::mirror($member);
+        self::savePicture($member, $pictureFile);
         $member->faculties()->sync(self::pivotFromEducationEntries($educationEntries));
         $member->churchResponsibilities()->sync(self::pivotFromDepartmentEntries($departmentEntries));
         $member->talents()->sync($talentIds);
@@ -255,14 +255,12 @@ class MemberService
             $member->occupations()->sync($data['occupation']);
         }
         unset($data['occupation']);
-
-        $data = self::preparePicture($data, $member);
+        dd($data);
+        $pictureFile = $data['pictureFile'] ?? null;
+        unset($data['pictureFile']);
 
         $member->update($data);
-
-        if (array_key_exists('picture', $data)) {
-            MemberPictureService::mirror($member);
-        }
+        self::savePicture($member, $pictureFile);
 
         return $member->fresh(self::MEMBER_RELATIONS);
     }
@@ -302,23 +300,22 @@ class MemberService
     }
 
     /**
-     * Stores a newly uploaded picture and replaces the previous file (if any).
-     * The new file is not mirrored to remote storage yet, so the sync flag is
-     * reset. When no new file is uploaded, the existing picture is left untouched.
-     * The upload arrives as `pictureFile`; the stored path goes in the `picture` column.
+     * Stores the uploaded `pictureFile`, replacing the previous file (if any),
+     * saves its path on the member and queues the remote mirror. The new file
+     * is not on remote storage yet, so the sync flag is reset. When no file is
+     * uploaded, the existing picture is left untouched.
      */
-    private static function preparePicture(array $data, ?Member $member = null): array
+    private static function savePicture(Member $member, mixed $file): void
     {
-        $file = $data['pictureFile'] ?? null;
-        unset($data['pictureFile']);
-
         if (!$file instanceof UploadedFile) {
-            return $data;
+            return;
         }
 
-        $data['picture'] = MemberPictureService::store($file, $member?->picture);
-        $data['picture_on_remote'] = false;
+        $member->update([
+            'picture'           => MemberPictureService::store($file, $member->picture),
+            'picture_on_remote' => false,
+        ]);
 
-        return $data;
+        MemberPictureService::mirror($member);
     }
 }
