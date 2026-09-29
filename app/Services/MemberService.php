@@ -19,7 +19,7 @@ class MemberService
     private const int DUPLICATE_CHECK_LIMIT = 10;
 
     private const array MEMBER_RELATIONS = [
-        'sex', 'maritalStatus' , 'educations', 'faculties', 'departments', 'churchResponsibilities', 'talents', 'occupations', 'spiritualGifts',
+        'sex', 'maritalStatus' , 'educations', 'faculties', 'departments', 'churchResponsibilities', 'talents', 'occupations', 'spiritualGifts', 'families',
     ];
 
     /** Extra relations the Excel export needs to print location names instead of IDs. */

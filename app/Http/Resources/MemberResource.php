@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\RoleType;
 use App\Services\MemberPictureService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -96,7 +97,31 @@ use OpenApi\Attributes as OA;
             type: 'array',
             items: new OA\Items(ref: '#/components/schemas/ChurchResponsibilityResource')
         ),
-        new OA\Property(property: 'province_id',        type: 'integer', example: 1),
+        new OA\Property(
+            property: 'families',
+            description: 'Families the member belongs to (typically one or two), with the role held in each',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/MemberFamilyResource')
+        ),
+        new OA\Property(
+            property: 'has_birth_family',
+            description: '[true, family_id] when the member is a child in a family, otherwise [false, 0]',
+            type: 'array',
+            items: new OA\Items(oneOf: [new OA\Schema(type: 'boolean'), new OA\Schema(type: 'integer')]),
+            maxItems: 2,
+            minItems: 2,
+            example: [true, 3]
+        ),
+        new OA\Property(
+            property: 'has_family',
+            description: '[true, family_id] when the member is the father of a family, otherwise [false, 0]',
+            type: 'array',
+            items: new OA\Items(oneOf: [new OA\Schema(type: 'boolean'), new OA\Schema(type: 'integer')]),
+            maxItems: 2,
+            minItems: 2,
+            example: [false, 0]
+        ),
+        new OA\Property(property: 'province_id',       type: 'integer', example: 1),
         new OA\Property(property: 'district_id',        type: 'integer', example: 1),
         new OA\Property(property: 'sector_id',          type: 'integer', example: 1),
         new OA\Property(property: 'cellule_id',         type: 'integer', example: 1),
@@ -133,6 +158,9 @@ class MemberResource extends JsonResource
             'faculties'         => FacultyResource::collection($this->whenLoaded('faculties')),
             'departments'       => DepartmentResource::collection($this->whenLoaded('departments')),
             'church_responsibilities' => ChurchResponsibilityResource::collection($this->whenLoaded('churchResponsibilities')),
+            'families'          => MemberFamilyResource::collection($this->whenLoaded('families')),
+            'has_birth_family'  => $this->whenLoaded('families', fn () => $this->familyFlagForRole(RoleType::CHILD)),
+            'has_family'        => $this->whenLoaded('families', fn () => $this->familyFlagForRole(RoleType::FATHER)),
             'province_id'       => $this->province_id,
             'district_id'       => $this->district_id,
             'sector_id'         => $this->sector_id,
@@ -140,5 +168,16 @@ class MemberResource extends JsonResource
             'cell_id'           => $this->cell_id,
             'village_id'        => $this->village_id,
         ];
+    }
+
+    /**
+     * Returns [true, family_id] for the first family where the member holds
+     * the given role, or [false, 0] when they hold it in none.
+     */
+    private function familyFlagForRole(RoleType $role): array
+    {
+        $family = $this->families->first(fn ($family) => $family->pivot->role_type === $role);
+
+        return $family ? [true, $family->id] : [false, 0];
     }
 }
