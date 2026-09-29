@@ -255,7 +255,6 @@ class MemberService
             $member->occupations()->sync($data['occupation']);
         }
         unset($data['occupation']);
-        dd($data);
         $pictureFile = $data['pictureFile'] ?? null;
         unset($data['pictureFile']);
 
