@@ -710,6 +710,38 @@ class MemberPaths
     )]
     public function update(): void {}
 
+    // ── Delete a member ──────────────────────────────────────────────────────
+    #[OA\Delete(
+        path: '/members/{id}',
+        description: 'Deletes a church member record. Their education, department, talent, occupation and spiritual-gift links and family memberships are removed via cascading delete. The member\'s picture (if any) is deleted from local storage immediately and from remote storage via a queued job.',
+        summary: 'Delete a member',
+        security: [['sanctum' => []]],
+        tags: ['Members'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'The ID of the member to delete',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 1)
+            ),
+        ],
+        responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 204, description: 'Member deleted successfully'),
+            new OA\Response(
+                response: 404,
+                description: 'Member not found',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'No query results for model [App\\Models\\Member] 99'),
+                    ]
+                )
+            ),
+        ]
+    )]
+    public function destroy(): void {}
+
     // ── Occupations ──────────────────────────────────────────────────────────
     #[OA\PathItem(path: '/members/occupations')]
     #[OA\Get(

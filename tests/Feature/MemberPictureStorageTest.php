@@ -105,6 +105,43 @@ class MemberPictureStorageTest extends TestCase
         Queue::assertPushed(SyncMemberPictureToRemote::class, fn ($job) => $job->path === $newPath);
     }
 
+    public function test_deleting_member_removes_row_and_picture_everywhere(): void
+    {
+        Queue::fake();
+
+        $member = Member::findOrFail($this->createMemberWithPicture()->json('data.id'));
+        $path = $member->picture;
+
+        $this->actingAs(User::factory()->create(), 'sanctum')
+            ->delete("/api/v1/members/{$member->id}", [], ['Accept' => 'application/json'])
+            ->assertNoContent();
+
+        $this->assertModelMissing($member);
+        $this->assertDatabaseMissing('member_talent', ['member_id' => $member->id]);
+        Storage::disk('public')->assertMissing($path);
+        Queue::assertPushed(DeleteMemberPictureFromRemote::class, fn ($job) => $job->path === $path);
+    }
+
+    public function test_deleting_member_without_picture_queues_nothing(): void
+    {
+        Queue::fake();
+        $member = $this->makeMember();
+
+        $this->actingAs(User::factory()->create(), 'sanctum')
+            ->delete("/api/v1/members/{$member->id}", [], ['Accept' => 'application/json'])
+            ->assertNoContent();
+
+        $this->assertModelMissing($member);
+        Queue::assertNothingPushed();
+    }
+
+    public function test_deleting_unknown_member_returns_not_found(): void
+    {
+        $this->actingAs(User::factory()->create(), 'sanctum')
+            ->delete('/api/v1/members/999999', [], ['Accept' => 'application/json'])
+            ->assertNotFound();
+    }
+
     public function test_sync_job_uploads_and_flags_member(): void
     {
         Storage::disk('public')->put('members/pictures/a.jpg', 'img');

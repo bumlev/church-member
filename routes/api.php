@@ -50,8 +50,8 @@ Route::prefix('v1')->group(function () {
             Route::get('departments/{department}/church-responsibilities', [MemberController::class, 'churchResponsibilities']);
         });
 
-        // ── Member resource (index, store, show, update) ───────────────────
-        Route::apiResource('members', MemberController::class)->except('destroy');
+        // ── Member resource (index, store, show, update, destroy) ──────────
+        Route::apiResource('members', MemberController::class);
 
         Route::prefix('families')->group(function () {
             // ── Family membership (add/remove a member from a family) ──────

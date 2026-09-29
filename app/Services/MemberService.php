@@ -265,6 +265,23 @@ class MemberService
     }
 
     /**
+     * Deletes the member row (pivot and family-membership rows go with it via
+     * cascading FKs), then removes its picture locally and — via queue — from
+     * remote storage. The row is deleted first so a failed delete never leaves
+     * a member pointing at a missing file.
+     */
+    public static function deleteMember(Member $member): void
+    {
+        $picture = $member->picture;
+
+        $member->delete();
+
+        if ($picture) {
+            MemberPictureService::delete($picture);
+        }
+    }
+
+    /**
      * Flattens [{education_id, faculty: [...]}] entries into pivot sync data
      * keyed by faculty_id, each carrying its paired education_id.
      */
