@@ -118,7 +118,7 @@ class UpdateMemberRequest extends FormRequest
                 'nullable', 'string', 'max:20',
                 Rule::unique('member', 'national_id')->ignore($this->route('member')),
             ],
-            'pictureFile'       => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
+            'pictureFile'       => ['image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
 
             // ── Optional dates ─────────────────────────────────────────────────
             'date_salvation'    => ['nullable', 'date_format:Y-m-d'],

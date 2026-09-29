@@ -38,6 +38,8 @@ class MemberPictureStorageTest extends TestCase
 
         $response->assertCreated();
         $member = Member::findOrFail($response->json('data.id'));
+        $this->assertNotNull($member->picture);
+        $this->assertSame(Storage::disk('public')->url($member->picture), $response->json('data.picture_url'));
         Storage::disk('public')->assertExists($member->picture);
         $this->assertFalse($member->picture_on_remote);
         Queue::assertPushed(SyncMemberPictureToRemote::class, fn ($job) => $job->path === $member->picture);
@@ -51,6 +53,37 @@ class MemberPictureStorageTest extends TestCase
         $this->createMemberWithPicture()->assertCreated();
 
         Queue::assertNothingPushed();
+    }
+
+    public function test_update_via_method_spoofing_saves_picture(): void
+    {
+        Queue::fake();
+        $member = $this->makeMember();
+
+        $response = $this->actingAs(User::factory()->create(), 'sanctum')
+            ->post("/api/v1/members/{$member->id}", [
+                '_method'     => 'PUT',
+                'first_name'  => 'Jane',
+                'pictureFile' => self::fakePicture('me.png'),
+            ], ['Accept' => 'application/json'])
+            ->assertOk();
+
+        $member->refresh();
+        $this->assertSame('Jane', $member->first_name);
+        $this->assertNotNull($member->picture);
+        $this->assertSame(Storage::disk('public')->url($member->picture), $response->json('data.picture_url'));
+        Storage::disk('public')->assertExists($member->picture);
+    }
+
+    public function test_update_without_picture_keeps_existing_one(): void
+    {
+        $member = $this->makeMember(['picture' => 'members/pictures/keep.jpg']);
+
+        $this->actingAs(User::factory()->create(), 'sanctum')
+            ->put("/api/v1/members/{$member->id}", ['first_name' => 'Jane'], ['Accept' => 'application/json'])
+            ->assertOk();
+
+        $this->assertSame('members/pictures/keep.jpg', $member->fresh()->picture);
     }
 
     public function test_replacing_picture_deletes_old_one_everywhere(): void
