@@ -93,6 +93,12 @@ class MemberController extends Controller
         ))->response()->setStatusCode(ResponseAlias::HTTP_OK);
     }
 
+    public function destroy(Member $member): JsonResponse
+    {
+        $this->memberService->deleteMember($member);
+        return response()->json(null, ResponseAlias::HTTP_NO_CONTENT);
+    }
+
     public function occupations(): JsonResponse
     {
         return OccupationResource::collection(

@@ -255,7 +255,6 @@ class MemberService
             $member->occupations()->sync($data['occupation']);
         }
         unset($data['occupation']);
-        dd($data);
         $pictureFile = $data['pictureFile'] ?? null;
         unset($data['pictureFile']);
 
@@ -263,6 +262,23 @@ class MemberService
         self::savePicture($member, $pictureFile);
 
         return $member->fresh(self::MEMBER_RELATIONS);
+    }
+
+    /**
+     * Deletes the member row (pivot and family-membership rows go with it via
+     * cascading FKs), then removes its picture locally and — via queue — from
+     * remote storage. The row is deleted first so a failed delete never leaves
+     * a member pointing at a missing file.
+     */
+    public static function deleteMember(Member $member): void
+    {
+        $picture = $member->picture;
+
+        $member->delete();
+
+        if ($picture) {
+            MemberPictureService::delete($picture);
+        }
     }
 
     /**

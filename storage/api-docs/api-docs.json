@@ -2672,6 +2672,55 @@
                         "sanctum": []
                     }
                 ]
+            },
+            "delete": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Delete a member",
+                "description": "Deletes a church member record. Their education, department, talent, occupation and spiritual-gift links and family memberships are removed via cascading delete. The member's picture (if any) is deleted from local storage immediately and from remote storage via a queued job.",
+                "operationId": "7b039a40fa7d6baacd9e527d0ce1a6ff",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the member to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "204": {
+                        "description": "Member deleted successfully"
+                    },
+                    "404": {
+                        "description": "Member not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\Models\\Member] 99"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/members/exists": {
