@@ -38,7 +38,7 @@ class UserService
         $user->email_verified_at = now();
         $user->save();
 
-        $user->notify(new NewAccountNotification($temporaryPassword));
+//        $user->notify(new NewAccountNotification($temporaryPassword));
 
         Log::info("Admin-created user [{$user->email}] issued a temporary password via email.");
 
