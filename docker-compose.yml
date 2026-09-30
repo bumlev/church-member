@@ -21,6 +21,26 @@ services:
     networks:
       - church_network
 
+  # ── Queue Worker (queued notifications & picture mirroring jobs) ────────────
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: church_member_queue
+    restart: unless-stopped
+    working_dir: /var/www
+    command: php artisan queue:work --tries=3 --backoff=10
+    volumes:
+      - .:/var/www
+      - /var/www/vendor          # exclude local vendor from being overwritten
+    env_file:
+      - .env.docker
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - church_network
+
   # ── Nginx Web Server ────────────────────────────────────────────────────────
   nginx:
     image: nginx:alpine
