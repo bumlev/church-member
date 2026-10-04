@@ -15,6 +15,7 @@ class FilterMemberRequest extends FormRequest
     private const array ID_LIST_FIELDS = [
         'sex_id', 'marital_status_id',
         'province_id', 'district_id', 'sector_id', 'cellule_id', 'cell_id', 'village_id',
+        'church_id',
         'occupation_id', 'talent_id', 'spiritual_gift_id',
         'education_id', 'faculty_id', 'department_id', 'church_responsibility_id',
         'family_id',
@@ -129,6 +130,10 @@ class FilterMemberRequest extends FormRequest
             'village_id'    => ['nullable', 'array'],
             'village_id.*'  => ['integer', 'exists:village,id'],
 
+            // ── Church ───────────────────────────────────────────────────────────
+            'church_id'     => ['nullable', 'array'],
+            'church_id.*'   => ['integer', 'exists:churches,id'],
+
             // ── Many-to-many relations ───────────────────────────────────────────
             'occupation_id'       => ['nullable', 'array'],
             'occupation_id.*'     => ['integer', 'exists:occupation,id'],
@@ -172,6 +177,7 @@ class FilterMemberRequest extends FormRequest
             'cellule_id.*.exists'               => 'Selected cellule is invalid.',
             'cell_id.*.exists'                  => 'Selected cell is invalid.',
             'village_id.*.exists'               => 'Selected village is invalid.',
+            'church_id.*.exists'                => 'Selected church is invalid.',
             'occupation_id.*.exists'            => 'Selected occupation is invalid.',
             'talent_id.*.exists'                => 'Selected talent is invalid.',
             'spiritual_gift_id.*.exists'        => 'Selected spiritual gift is invalid.',

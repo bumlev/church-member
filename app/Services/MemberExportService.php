@@ -38,6 +38,7 @@ class MemberExportService
             'Date of Salvation'       => fn (Member $m) => $m->date_salvation?->toDateString(),
             'Date of Baptism'         => fn (Member $m) => $m->date_baptism?->toDateString(),
             'Member Since'            => fn (Member $m) => $m->member_since?->toDateString(),
+            'Church'                  => fn (Member $m) => $m->church?->name,
             'Province'                => fn (Member $m) => $m->province?->name,
             'District'                => fn (Member $m) => $m->district?->name,
             'Sector'                  => fn (Member $m) => $m->sector?->name,

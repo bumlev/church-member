@@ -39,6 +39,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property mixed $cellule
  * @property mixed $cell
  * @property mixed $village
+ * @property mixed $church
  * @property mixed $occupations
  * @property mixed $educations
  * @property mixed $faculties
@@ -77,7 +78,8 @@ class Member extends Model
         'sector_id',
         'cellule_id',
         'cell_id',
-        'village_id'
+        'village_id',
+        'church_id',
     ];
 
     protected $casts = [
@@ -163,6 +165,13 @@ class Member extends Model
         return $this->belongsToMany(Family::class, 'family_membership')
             ->using(FamilyMembership::class)
             ->withPivot('id', 'role_type', 'start_date', 'end_date');
+    }
+
+    // ── Church relationship ─────────────────────────────────────────────────
+
+    public function church(): BelongsTo
+    {
+        return $this->belongsTo(Church::class);
     }
 
     // ── Geographic relationships ────────────────────────────────────────────

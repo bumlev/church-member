@@ -112,6 +112,13 @@ class MemberPaths
                 schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [1])
             ),
             new OA\Parameter(
+                name: 'church_id',
+                description: 'One or more church IDs. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [1])
+            ),
+            new OA\Parameter(
                 name: 'occupation_id',
                 description: 'Member has any of these occupations. Repeat the param, send a comma-separated list, or a single ID.',
                 in: 'query',
@@ -296,6 +303,13 @@ class MemberPaths
                 schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [1])
             ),
             new OA\Parameter(
+                name: 'church_id',
+                description: 'One or more church IDs. Repeat the param, send a comma-separated list, or a single ID.',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'integer'), example: [1])
+            ),
+            new OA\Parameter(
                 name: 'occupation_id',
                 description: 'Member has any of these occupations. Repeat the param, send a comma-separated list, or a single ID.',
                 in: 'query',
@@ -461,6 +475,7 @@ class MemberPaths
                     new OA\Property(property: 'cellule_id',        type: 'integer', example: 1,               nullable: true),
                     new OA\Property(property: 'cell_id',           type: 'integer', example: 1,               nullable: true),
                     new OA\Property(property: 'village_id',        type: 'integer', example: 1,               nullable: true),
+                    new OA\Property(property: 'church_id',         type: 'integer', example: 1,               nullable: true),
                 ]
                 )
             )
@@ -717,6 +732,7 @@ class MemberPaths
                     new OA\Property(property: 'cellule_id',        type: 'integer', example: 1,                  nullable: true),
                     new OA\Property(property: 'cell_id',           type: 'integer', example: 1,                  nullable: true),
                     new OA\Property(property: 'village_id',        type: 'integer', example: 1,                  nullable: true),
+                    new OA\Property(property: 'church_id',         type: 'integer', example: 1,                  nullable: true),
                 ]
                 )
             )

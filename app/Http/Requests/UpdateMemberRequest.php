@@ -143,6 +143,9 @@ class UpdateMemberRequest extends FormRequest
             'mobile_tel'        => ['nullable', 'string', 'max:20'],
             'email'             => ['nullable', 'email', 'max:150'],
 
+            // ── Church FK ──────────────────────────────────────────────────────
+            'church_id'         => ['nullable', 'integer', 'exists:churches,id'],
+
             // ── Geographic FKs ─────────────────────────────────────────────────
             'province_id'       => ['nullable', 'integer', 'exists:province,id'],
             'district_id'       => ['nullable', 'integer', 'exists:district,id'],
@@ -234,6 +237,7 @@ class UpdateMemberRequest extends FormRequest
             'cellule_id.exists'          => 'Selected cellule is invalid.',
             'cell_id.exists'             => 'Selected cell is invalid.',
             'village_id.exists'          => 'Selected village is invalid.',
+            'church_id.exists'           => 'Selected church is invalid.',
         ];
     }
 }
