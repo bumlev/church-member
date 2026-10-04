@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Member;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -17,6 +18,9 @@ class MemberService
 
     /** Cap on rows returned by the duplicate-check search — an exact match on all three fields is expected to be rare. */
     private const int DUPLICATE_CHECK_LIMIT = 10;
+
+    /** Members younger than this age are eligible for Sunday school. */
+    private const int SUNDAY_SCHOOL_AGE_LIMIT = 19;
 
     private const array MEMBER_RELATIONS = [
         'sex', 'maritalStatus' , 'educations', 'faculties', 'departments', 'churchResponsibilities', 'talents', 'occupations', 'spiritualGifts', 'families',
@@ -78,6 +82,8 @@ class MemberService
         self::applyExactListFilters($query, $filters);
         self::applyExactFilter($query, $filters, 'national_id');
         self::applyExactFilter($query, $filters, 'employed');
+        self::applyExactFilter($query, $filters, 'is_member');
+        self::applyExactFilter($query, $filters, 'attends_sunday_school');
         self::applyAgeFilter($query, $filters);
         self::applyDateRangeFilters($query, $filters);
         self::applyRelationIdFilters($query, $filters);
@@ -106,6 +112,21 @@ class MemberService
                         ->orderBy('id')
                         ->limit(self::DUPLICATE_CHECK_LIMIT)
                         ->get();
+    }
+
+    /**
+     * Computes the age for a date of birth and whether it is under 19,
+     * used by the registration form to decide on Sunday school attendance.
+     */
+    public static function checkAge(string $dateBirthday): array
+    {
+        $age = (int) Carbon::parse($dateBirthday)->diffInYears(now());
+
+        return [
+            'date_birthday' => $dateBirthday,
+            'age'           => $age,
+            'is_under_19'   => $age < self::SUNDAY_SCHOOL_AGE_LIMIT,
+        ];
     }
 
     private static function applyPartialMatchFilters(Builder $query, array $filters): void

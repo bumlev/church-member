@@ -15,6 +15,8 @@ use OpenApi\Attributes as OA;
  * @property mixed $email
  * @property mixed $mobile_tel
  * @property mixed $employed
+ * @property mixed $is_member
+ * @property mixed $attends_sunday_school
  * @property mixed $fathers_name
  * @property mixed $mothers_name
  * @property mixed $national_id
@@ -54,6 +56,8 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'email',              type: 'string',  example: 'john.doe@example.com', nullable: true),
         new OA\Property(property: 'mobile_tel',         type: 'string',  example: '+250788000000',        nullable: true),
         new OA\Property(property: 'employed',           type: 'boolean', example: true),
+        new OA\Property(property: 'is_member',          type: 'boolean', example: true, description: 'Whether the person is an official church member (false = visitor/attendee).'),
+        new OA\Property(property: 'attends_sunday_school', type: 'boolean', example: false, description: 'Whether the member (typically under 19) attends Sunday school.'),
         new OA\Property(property: 'fathers_name',       type: 'string',  example: 'James Doe',            nullable: true),
         new OA\Property(property: 'mothers_name',       type: 'string',  example: 'Mary Doe',             nullable: true),
         new OA\Property(property: 'national_id',        type: 'string',  example: '1199080012345678',     nullable: true),
@@ -142,6 +146,8 @@ class MemberResource extends JsonResource
             'email'             => $this->email,
             'mobile_tel'        => $this->mobile_tel,
             'employed'          => $this->employed,
+            'is_member'         => $this->is_member,
+            'attends_sunday_school' => $this->attends_sunday_school,
             'fathers_name'      => $this->fathers_name,
             'mothers_name'      => $this->mothers_name,
             'national_id'       => $this->national_id,

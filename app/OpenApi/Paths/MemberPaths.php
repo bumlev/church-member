@@ -67,6 +67,8 @@ class MemberPaths
             new OA\Parameter(name: 'member_since_from', description: 'Format: yyyy-mm-dd.', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date', example: '2010-01-01')),
             new OA\Parameter(name: 'member_since_to', description: 'Format: yyyy-mm-dd.', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date', example: '2020-12-31')),
             new OA\Parameter(name: 'employed', description: 'Exact match. Accepts "true"/"false" (also "1"/"0").', in: 'query', required: false, schema: new OA\Schema(type: 'boolean', example: true)),
+            new OA\Parameter(name: 'is_member', description: 'Exact match. true = official church member, false = visitor/attendee. Accepts "true"/"false" (also "1"/"0").', in: 'query', required: false, schema: new OA\Schema(type: 'boolean', example: true)),
+            new OA\Parameter(name: 'attends_sunday_school', description: 'Exact match. true = attends Sunday school. Accepts "true"/"false" (also "1"/"0").', in: 'query', required: false, schema: new OA\Schema(type: 'boolean', example: true)),
             new OA\Parameter(
                 name: 'province_id',
                 description: 'One or more province IDs. Repeat the param, send a comma-separated list, or a single ID.',
@@ -249,6 +251,8 @@ class MemberPaths
             new OA\Parameter(name: 'member_since_from', description: 'Format: yyyy-mm-dd.', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date', example: '2010-01-01')),
             new OA\Parameter(name: 'member_since_to', description: 'Format: yyyy-mm-dd.', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date', example: '2020-12-31')),
             new OA\Parameter(name: 'employed', description: 'Exact match. Accepts "true"/"false" (also "1"/"0").', in: 'query', required: false, schema: new OA\Schema(type: 'boolean', example: true)),
+            new OA\Parameter(name: 'is_member', description: 'Exact match. true = official church member, false = visitor/attendee. Accepts "true"/"false" (also "1"/"0").', in: 'query', required: false, schema: new OA\Schema(type: 'boolean', example: true)),
+            new OA\Parameter(name: 'attends_sunday_school', description: 'Exact match. true = attends Sunday school. Accepts "true"/"false" (also "1"/"0").', in: 'query', required: false, schema: new OA\Schema(type: 'boolean', example: true)),
             new OA\Parameter(
                 name: 'province_id',
                 description: 'One or more province IDs. Repeat the param, send a comma-separated list, or a single ID.',
@@ -419,6 +423,8 @@ class MemberPaths
                     new OA\Property(property: 'fathers_name',      type: 'string',  example: 'James Doe',     nullable: true, maxLength: 150),
                     new OA\Property(property: 'mothers_name',      type: 'string',  example: 'Mary Doe',      nullable: true, maxLength: 150),
                     new OA\Property(property: 'employed',          type: 'boolean', example: true,            nullable: true, description: 'Submitted as multipart/form-data as the literal string "true" or "false" (also accepts "1"/"0").'),
+                    new OA\Property(property: 'is_member',         type: 'boolean', example: true,            nullable: true, description: 'Whether the person is an official church member (false = visitor/attendee). Defaults to true when omitted. Submitted as multipart/form-data as the literal string "true" or "false" (also accepts "1"/"0").'),
+                    new OA\Property(property: 'attends_sunday_school', type: 'boolean', example: false,       nullable: true, description: 'Whether the member (typically under 19) attends Sunday school. Defaults to false when omitted. Submitted as multipart/form-data as the literal string "true" or "false" (also accepts "1"/"0").'),
                     new OA\Property(
                         property: 'occupation',
                         description: 'IDs of occupations selected. Submitted as multipart/form-data: use repeated fields (occupation[]=2), a single JSON-encoded string (e.g. "[2]"), a comma-separated string (e.g. "2,4"), or a bare single ID (e.g. occupation=2).',
@@ -582,6 +588,60 @@ class MemberPaths
     )]
     public function exists(): void {}
 
+    // ── Check whether a member is under 19 ───────────────────────────────────
+    #[OA\PathItem(path: '/members/check-age')]
+    #[OA\Post(
+        path: '/members/check-age',
+        description: 'Computes the age from the given date of birth and reports whether the person is under 19 years old. Intended for the member registration form, to decide whether the person is eligible for Sunday school (attends_sunday_school).',
+        summary: 'Check whether a member is under 19 years old',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['date_birthday'],
+                properties: [
+                    new OA\Property(property: 'date_birthday', type: 'string', format: 'date', example: '2012-05-12', description: 'Format: yyyy-mm-dd. Cannot be in the future.'),
+                ]
+            )
+        ),
+        tags: ['Members'],
+        responses: [
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(
+                response: 200,
+                description: 'Age computed from the date of birth',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'data',
+                            properties: [
+                                new OA\Property(property: 'date_birthday', type: 'string', format: 'date', example: '2012-05-12'),
+                                new OA\Property(property: 'age',           type: 'integer', example: 14),
+                                new OA\Property(property: 'is_under_19',   type: 'boolean', example: true),
+                            ],
+                            type: 'object'
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Missing, malformed, or future date of birth',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'Date of birth is required.'),
+                        new OA\Property(
+                            property: 'errors',
+                            type: 'object',
+                            example: ['date_birthday' => ['Date of birth is required.']]
+                        ),
+                    ]
+                )
+            ),
+        ]
+    )]
+    public function checkAge(): void {}
+
     // ── Update a member ──────────────────────────────────────────────────────
     #[OA\Put(
         path: '/members/{id}',
@@ -619,6 +679,8 @@ class MemberPaths
                     new OA\Property(property: 'fathers_name',      type: 'string',  example: 'James Doe',        nullable: true, maxLength: 150),
                     new OA\Property(property: 'mothers_name',      type: 'string',  example: 'Mary Doe',         nullable: true, maxLength: 150),
                     new OA\Property(property: 'employed',          type: 'boolean', example: true,               nullable: true, description: 'Submitted as multipart/form-data as the literal string "true" or "false" (also accepts "1"/"0").'),
+                    new OA\Property(property: 'is_member',         type: 'boolean', example: true,               nullable: true, description: 'Whether the person is an official church member (false = visitor/attendee). Submitted as multipart/form-data as the literal string "true" or "false" (also accepts "1"/"0").'),
+                    new OA\Property(property: 'attends_sunday_school', type: 'boolean', example: false,          nullable: true, description: 'Whether the member (typically under 19) attends Sunday school. Submitted as multipart/form-data as the literal string "true" or "false" (also accepts "1"/"0").'),
                     new OA\Property(
                         property: 'occupation',
                         description: 'IDs of occupations selected. Submitted as multipart/form-data: use repeated fields (occupation[]=2), a single JSON-encoded string (e.g. "[2]"), a comma-separated string (e.g. "2,4"), or a bare single ID (e.g. occupation=2).',

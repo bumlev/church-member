@@ -28,6 +28,8 @@ class FilterMemberRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->normalizeBoolean('employed');
+        $this->normalizeBoolean('is_member');
+        $this->normalizeBoolean('attends_sunday_school');
 
         foreach (self::ID_LIST_FIELDS as $field) {
             $this->normalizeIdList($field);
@@ -106,6 +108,12 @@ class FilterMemberRequest extends FormRequest
 
             // ── Employment ───────────────────────────────────────────────────────
             'employed' => ['nullable', 'boolean'],
+
+            // ── Membership status ─────────────────────────────────────────────────
+            'is_member' => ['nullable', 'boolean'],
+
+            // ── Sunday school ────────────────────────────────────────────────────
+            'attends_sunday_school' => ['nullable', 'boolean'],
 
             // ── Geographic hierarchy ─────────────────────────────────────────────
             'province_id'   => ['nullable', 'array'],

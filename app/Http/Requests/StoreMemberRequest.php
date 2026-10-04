@@ -32,6 +32,8 @@ class StoreMemberRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->normalizeBoolean('employed');
+        $this->normalizeBoolean('is_member');
+        $this->normalizeBoolean('attends_sunday_school');
 
         foreach (self::SCALAR_LIST_FIELDS as $field) {
             $this->normalizeArrayField($field, wrapScalars: true);
@@ -114,6 +116,8 @@ class StoreMemberRequest extends FormRequest
             'fathers_name'      => ['nullable', 'string', 'max:150'],
             'mothers_name'      => ['nullable', 'string', 'max:150'],
             'employed'          => ['nullable', 'boolean'],
+            'is_member'         => ['nullable', 'boolean'],
+            'attends_sunday_school' => ['nullable', 'boolean'],
             'national_id'       => ['nullable', 'string', 'max:20', 'unique:member,national_id'],
             'pictureFile'       => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
 

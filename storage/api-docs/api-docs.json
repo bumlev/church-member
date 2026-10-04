@@ -400,6 +400,44 @@
                 ]
             }
         },
+        "/churches": {
+            "get": {
+                "tags": [
+                    "Churches"
+                ],
+                "summary": "List all churches",
+                "description": "Returns a collection of all churches ordered alphabetically.",
+                "operationId": "8125d9f6479041a29d5c01a68d625167",
+                "responses": {
+                    "200": {
+                        "description": "A list of churches",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ChurchResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/{province}/districts": {
             "get": {
                 "tags": [
@@ -1301,6 +1339,26 @@
                         }
                     },
                     {
+                        "name": "is_member",
+                        "in": "query",
+                        "description": "Exact match. true = official church member, false = visitor/attendee. Accepts \"true\"/\"false\" (also \"1\"/\"0\").",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    },
+                    {
+                        "name": "attends_sunday_school",
+                        "in": "query",
+                        "description": "Exact match. true = attends Sunday school. Accepts \"true\"/\"false\" (also \"1\"/\"0\").",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    },
+                    {
                         "name": "province_id",
                         "in": "query",
                         "description": "One or more province IDs. Repeat the param, send a comma-separated list, or a single ID.",
@@ -1696,6 +1754,18 @@
                                         "example": true,
                                         "nullable": true
                                     },
+                                    "is_member": {
+                                        "description": "Whether the person is an official church member (false = visitor/attendee). Defaults to true when omitted. Submitted as multipart/form-data as the literal string \"true\" or \"false\" (also accepts \"1\"/\"0\").",
+                                        "type": "boolean",
+                                        "example": true,
+                                        "nullable": true
+                                    },
+                                    "attends_sunday_school": {
+                                        "description": "Whether the member (typically under 19) attends Sunday school. Defaults to false when omitted. Submitted as multipart/form-data as the literal string \"true\" or \"false\" (also accepts \"1\"/\"0\").",
+                                        "type": "boolean",
+                                        "example": false,
+                                        "nullable": true
+                                    },
                                     "occupation": {
                                         "description": "IDs of occupations selected. Submitted as multipart/form-data: use repeated fields (occupation[]=2), a single JSON-encoded string (e.g. \"[2]\"), a comma-separated string (e.g. \"2,4\"), or a bare single ID (e.g. occupation=2).",
                                         "type": "array",
@@ -2059,6 +2129,26 @@
                         "name": "employed",
                         "in": "query",
                         "description": "Exact match. Accepts \"true\"/\"false\" (also \"1\"/\"0\").",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    },
+                    {
+                        "name": "is_member",
+                        "in": "query",
+                        "description": "Exact match. true = official church member, false = visitor/attendee. Accepts \"true\"/\"false\" (also \"1\"/\"0\").",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    },
+                    {
+                        "name": "attends_sunday_school",
+                        "in": "query",
+                        "description": "Exact match. true = attends Sunday school. Accepts \"true\"/\"false\" (also \"1\"/\"0\").",
                         "required": false,
                         "schema": {
                             "type": "boolean",
@@ -2495,6 +2585,18 @@
                                         "example": true,
                                         "nullable": true
                                     },
+                                    "is_member": {
+                                        "description": "Whether the person is an official church member (false = visitor/attendee). Submitted as multipart/form-data as the literal string \"true\" or \"false\" (also accepts \"1\"/\"0\").",
+                                        "type": "boolean",
+                                        "example": true,
+                                        "nullable": true
+                                    },
+                                    "attends_sunday_school": {
+                                        "description": "Whether the member (typically under 19) attends Sunday school. Submitted as multipart/form-data as the literal string \"true\" or \"false\" (also accepts \"1\"/\"0\").",
+                                        "type": "boolean",
+                                        "example": false,
+                                        "nullable": true
+                                    },
                                     "occupation": {
                                         "description": "IDs of occupations selected. Submitted as multipart/form-data: use repeated fields (occupation[]=2), a single JSON-encoded string (e.g. \"[2]\"), a comma-separated string (e.g. \"2,4\"), or a bare single ID (e.g. occupation=2).",
                                         "type": "array",
@@ -2801,6 +2903,101 @@
                                             "example": {
                                                 "first_name": [
                                                     "First name is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/members/check-age": {
+            "post": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Check whether a member is under 19 years old",
+                "description": "Computes the age from the given date of birth and reports whether the person is under 19 years old. Intended for the member registration form, to decide whether the person is eligible for Sunday school (attends_sunday_school).",
+                "operationId": "7901e010d860994f7e0c6106c19da14e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "date_birthday"
+                                ],
+                                "properties": {
+                                    "date_birthday": {
+                                        "description": "Format: yyyy-mm-dd. Cannot be in the future.",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2012-05-12"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "200": {
+                        "description": "Age computed from the date of birth",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "date_birthday": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2012-05-12"
+                                                },
+                                                "age": {
+                                                    "type": "integer",
+                                                    "example": 14
+                                                },
+                                                "is_under_19": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Missing, malformed, or future date of birth",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Date of birth is required."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "date_birthday": [
+                                                    "Date of birth is required."
                                                 ]
                                             }
                                         }
@@ -3764,6 +3961,25 @@
                 },
                 "type": "object"
             },
+            "ChurchResource": {
+                "title": "Church",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Zion Temple"
+                    },
+                    "location": {
+                        "type": "string",
+                        "example": "Kigali",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "ChurchResponsibilityResource": {
                 "title": "ChurchResponsibility",
                 "description": "A church responsibility option, scoped to a department, for the member registration form",
@@ -4004,6 +4220,16 @@
                     "employed": {
                         "type": "boolean",
                         "example": true
+                    },
+                    "is_member": {
+                        "description": "Whether the person is an official church member (false = visitor/attendee).",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "attends_sunday_school": {
+                        "description": "Whether the member (typically under 19) attends Sunday school.",
+                        "type": "boolean",
+                        "example": false
                     },
                     "fathers_name": {
                         "type": "string",
@@ -4439,6 +4665,10 @@
         {
             "name": "Admin: Users",
             "description": "Admin-only user account management. Requires an authenticated admin user."
+        },
+        {
+            "name": "Churches",
+            "description": "Churches"
         },
         {
             "name": "Test",
