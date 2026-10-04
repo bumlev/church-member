@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AdminUserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CelluleController;
+use App\Http\Controllers\Api\ChurchController;
 use App\Http\Controllers\Api\DistrictController;
 use App\Http\Controllers\Api\FamilyController;
 use App\Http\Controllers\Api\MemberController;
@@ -32,10 +33,15 @@ Route::prefix('v1')->group(function () {
         Route::get('/{sector}/cellules',    [CelluleController::class,  'index']);
         Route::get('/{cellule}/villages',   [VillageController::class,  'index']);
 
+        // ── Churches ────────────────────────────────────────────────────────
+        Route::get('churches', [ChurchController::class, 'index']);
 
         Route::prefix('members')->group(function () {
             // ── Live duplicate check (first_name + last_name + date_birthday) ──
             Route::get('exists', [MemberController::class, 'exists']);
+
+            // ── Age check: is the member under 19 (Sunday school eligibility) ──
+            Route::post('check-age', [MemberController::class, 'checkAge']);
 
             // ── Excel export of the filtered member list (same filters as index) ──
             Route::get('export', [MemberController::class, 'export']);

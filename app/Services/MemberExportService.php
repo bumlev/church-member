@@ -31,6 +31,8 @@ class MemberExportService
             'Email'                   => fn (Member $m) => $m->email,
             'Mobile'                  => fn (Member $m) => $m->mobile_tel,
             'Employed'                => fn (Member $m) => $m->employed ? 'Yes' : 'No',
+            'Is Member'               => fn (Member $m) => $m->is_member ? 'Yes' : 'No',
+            'Attends Sunday School'   => fn (Member $m) => $m->attends_sunday_school ? 'Yes' : 'No',
             "Father's Name"           => fn (Member $m) => $m->fathers_name,
             "Mother's Name"           => fn (Member $m) => $m->mothers_name,
             'Date of Salvation'       => fn (Member $m) => $m->date_salvation?->toDateString(),

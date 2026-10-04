@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property mixed $email
  * @property mixed $mobile_tel
  * @property mixed $employed
+ * @property bool $is_member
+ * @property bool $attends_sunday_school
  * @property mixed $fathers_name
  * @property mixed $mothers_name
  * @property mixed $date_salvation
@@ -59,6 +61,8 @@ class Member extends Model
         'fathers_name',
         'mothers_name',
         'employed',
+        'is_member',
+        'attends_sunday_school',
         'mobile_tel',
         'email',
         'national_id',
@@ -78,7 +82,9 @@ class Member extends Model
 
     protected $casts = [
         'employed'          => 'boolean',
-        'picture_on_remote' => 'boolean',
+        'is_member'             => 'boolean',
+        'attends_sunday_school' => 'boolean',
+        'picture_on_remote'     => 'boolean',
         'date_birthday'     => 'date',
         'date_salvation'    => 'date',
         'date_baptism'      => 'date',
