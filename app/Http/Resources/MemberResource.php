@@ -34,6 +34,7 @@ use OpenApi\Attributes as OA;
  * @property mixed $cellule_id
  * @property mixed $cell_id
  * @property mixed $village_id
+ * @property mixed $church_id
  */
 #[OA\Schema(
     schema: 'MemberResource',
@@ -131,6 +132,8 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'cellule_id',         type: 'integer', example: 1),
         new OA\Property(property: 'cell_id',            type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'village_id',         type: 'integer', example: 1),
+        new OA\Property(property: 'church_id',          type: 'integer', example: 1, nullable: true),
+        new OA\Property(property: 'church',             ref: '#/components/schemas/ChurchResource', nullable: true),
     ]
 )]
 class MemberResource extends JsonResource
@@ -173,6 +176,8 @@ class MemberResource extends JsonResource
             'cellule_id'        => $this->cellule_id,
             'cell_id'           => $this->cell_id,
             'village_id'        => $this->village_id,
+            'church_id'         => $this->church_id,
+            'church'            => new ChurchResource($this->whenLoaded('church')),
         ];
     }
 

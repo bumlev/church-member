@@ -23,7 +23,7 @@ class MemberService
     private const int SUNDAY_SCHOOL_AGE_LIMIT = 19;
 
     private const array MEMBER_RELATIONS = [
-        'sex', 'maritalStatus' , 'educations', 'faculties', 'departments', 'churchResponsibilities', 'talents', 'occupations', 'spiritualGifts', 'families',
+        'sex', 'maritalStatus' , 'educations', 'faculties', 'departments', 'churchResponsibilities', 'talents', 'occupations', 'spiritualGifts', 'families', 'church',
     ];
 
     /** Extra relations the Excel export needs to print location names instead of IDs. */
@@ -38,6 +38,7 @@ class MemberService
     private const array EXACT_LIST_FIELDS = [
         'sex_id', 'marital_status_id',
         'province_id', 'district_id', 'sector_id', 'cellule_id', 'cell_id', 'village_id',
+        'church_id',
     ];
 
     /** Date columns exposed as `{column}_from` / `{column}_to` range filters. */

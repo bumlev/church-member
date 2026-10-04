@@ -1449,6 +1449,21 @@
                         }
                     },
                     {
+                        "name": "church_id",
+                        "in": "query",
+                        "description": "One or more church IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
                         "name": "occupation_id",
                         "in": "query",
                         "description": "Member has any of these occupations. Repeat the param, send a comma-separated list, or a single ID.",
@@ -1870,6 +1885,11 @@
                                         "type": "integer",
                                         "example": 1,
                                         "nullable": true
+                                    },
+                                    "church_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -2234,6 +2254,21 @@
                         "name": "village_id",
                         "in": "query",
                         "description": "One or more village IDs. Repeat the param, send a comma-separated list, or a single ID.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "example": [
+                                1
+                            ]
+                        }
+                    },
+                    {
+                        "name": "church_id",
+                        "in": "query",
+                        "description": "One or more church IDs. Repeat the param, send a comma-separated list, or a single ID.",
                         "required": false,
                         "schema": {
                             "type": "array",
@@ -2699,6 +2734,11 @@
                                         "nullable": true
                                     },
                                     "village_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "church_id": {
                                         "type": "integer",
                                         "example": 1,
                                         "nullable": true
@@ -4391,6 +4431,19 @@
                     "village_id": {
                         "type": "integer",
                         "example": 1
+                    },
+                    "church_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "church": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/ChurchResource"
+                            }
+                        ],
+                        "nullable": true
                     }
                 },
                 "type": "object"
