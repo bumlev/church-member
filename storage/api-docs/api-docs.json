@@ -4114,6 +4114,16 @@
                         "type": "string",
                         "example": "Doe"
                     },
+                    "is_member": {
+                        "description": "Whether the person is an official church member (false = visitor/attendee).",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "church_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
                     "role_type": {
                         "type": "string",
                         "example": "father",
