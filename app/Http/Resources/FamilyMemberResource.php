@@ -10,6 +10,8 @@ use OpenApi\Attributes as OA;
  * @property mixed $id
  * @property mixed $first_name
  * @property mixed $last_name
+ * @property mixed $is_member
+ * @property mixed $church_id
  * @property \App\Models\FamilyMembership $pivot
  */
 #[OA\Schema(
@@ -20,6 +22,8 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'member_id',  type: 'integer', example: 1),
         new OA\Property(property: 'first_name', type: 'string',  example: 'John'),
         new OA\Property(property: 'last_name',  type: 'string',  example: 'Doe'),
+        new OA\Property(property: 'is_member',  type: 'boolean', example: true, description: 'Whether the person is an official church member (false = visitor/attendee).'),
+        new OA\Property(property: 'church_id',  type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'role_type',  type: 'string',  example: 'father', enum: ['father', 'mother', 'child', 'guardian']),
         new OA\Property(property: 'start_date', type: 'string',  format: 'date', example: '2010-06-12', nullable: true),
         new OA\Property(property: 'end_date',   type: 'string',  format: 'date', example: null,         nullable: true),
@@ -33,6 +37,8 @@ class FamilyMemberResource extends JsonResource
             'member_id'  => $this->id,
             'first_name' => $this->first_name,
             'last_name'  => $this->last_name,
+            'is_member'  => $this->is_member,
+            'church_id'  => $this->church_id,
             'role_type'  => $this->pivot->role_type->value,
             'start_date' => $this->pivot->start_date?->toDateString(),
             'end_date'   => $this->pivot->end_date?->toDateString(),
